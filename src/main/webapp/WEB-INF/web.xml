@@ -12,8 +12,30 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>WebServlet</servlet-name>
+        <servlet-class>net.mydrive.ws.WebServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>RestServlet</servlet-name>
+        <servlet-class>net.mydrive.ws.RestCallServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>WebServlet</servlet-name>
+        <url-pattern>/web/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>RestServlet</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>Jersey Web Application</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
+
+
 </web-app>
