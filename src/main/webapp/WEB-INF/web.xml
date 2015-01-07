@@ -21,12 +21,17 @@
         <servlet-name>RestServlet</servlet-name>
         <servlet-class>net.mydrive.ws.RestCallServlet</servlet-class>
     </servlet>
-
+    
+    <!-- 
+    
+        No Need because HTML is automatically displayed
+        
     <servlet-mapping>
         <servlet-name>WebServlet</servlet-name>
-        <url-pattern>/web/*</url-pattern>
+        <url-pattern>/*.html</url-pattern>
     </servlet-mapping>
-
+    -->
+    
     <servlet-mapping>
         <servlet-name>RestServlet</servlet-name>
         <url-pattern>/rest/*</url-pattern>
@@ -34,8 +39,13 @@
 
     <servlet-mapping>
         <servlet-name>Jersey Web Application</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/hello/*</url-pattern>
     </servlet-mapping>
-
+    
+    
+    <!-- HOME PAGE -->
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
 
 </web-app>
