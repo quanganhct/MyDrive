@@ -19,7 +19,14 @@ public class WebServlet extends HttpServlet {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
         throws ServletException, IOException {
-        System.out.println(request);
-        response.sendRedirect("index.html");
+        //System.out.println("1 "+request.getRequestURI());
+        //System.out.println("2 "+request.getServletPath());
+        
+        
+        if(request.getServletPath() == "/index.html"){
+           request.getRequestDispatcher("index.ftl").forward(request, response);
+        }else{
+            System.out.println("Error 404");
+        }
     }
 }
