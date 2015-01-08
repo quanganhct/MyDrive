@@ -20,10 +20,10 @@ public class WebServlet extends HttpServlet {
                       HttpServletResponse response)
         throws ServletException, IOException {
         //System.out.println("1 "+request.getRequestURI());
-        //System.out.println("2 "+request.getServletPath());
+        System.out.println("2"+request.getServletPath()+"2");
         
         
-        if(request.getServletPath() == "/index.html"){
+        if(request.getServletPath().equals("/index.html")){
            request.getRequestDispatcher("index.ftl").forward(request, response);
         }else{
             System.out.println("Error 404");
