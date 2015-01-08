@@ -16,6 +16,15 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 public class WebServlet extends HttpServlet {
+
+    /**
+     *
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
+    @Override
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
         throws ServletException, IOException {

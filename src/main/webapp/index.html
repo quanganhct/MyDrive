@@ -11,16 +11,16 @@
 	<title>DreamTeam Drive</title>
 
 	<!--<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Arimo:400,700,400italic"> -->
-	<link rel="stylesheet" href="../assets/css/fonts/linecons/css/linecons.css">
-	<link rel="stylesheet" href="../assets/css/fonts/fontawesome/css/font-awesome.min.css">
-	<link rel="stylesheet" href="../assets/css/bootstrap.css">
-	<link rel="stylesheet" href="../assets/css/xenon-core.css">
-	<link rel="stylesheet" href="../assets/css/xenon-forms.css">
-	<link rel="stylesheet" href="../assets/css/xenon-components.css">
-	<link rel="stylesheet" href="../assets/css/xenon-skins.css">
-	<link rel="stylesheet" href="../assets/css/custom.css">
+	<link rel="stylesheet" href="assets/css/fonts/linecons/css/linecons.css">
+	<link rel="stylesheet" href="assets/css/fonts/fontawesome/css/font-awesome.min.css">
+	<link rel="stylesheet" href="assets/css/bootstrap.css">
+	<link rel="stylesheet" href="assets/css/xenon-core.css">
+	<link rel="stylesheet" href="assets/css/xenon-forms.css">
+	<link rel="stylesheet" href="assets/css/xenon-components.css">
+	<link rel="stylesheet" href="assets/css/xenon-skins.css">
+	<link rel="stylesheet" href="assets/css/custom.css">
 
-	<script src="../assets/js/jquery-1.11.1.min.js"></script>
+	<script src="assets/js/jquery-1.11.1.min.js"></script>
 
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
@@ -38,9 +38,9 @@
 		
 			<!-- Navbar Brand -->
 			<div class="navbar-brand">
-				<a href="dashboard-1.html" class="logo">
-					<img src="../assets/images/logo-white-bg@2x.png" width="80" alt="" class="hidden-xs" />
-					<img src="../assets/images/logo@2x.png" width="80" alt="" class="visible-xs" />
+				<a href="index.html" class="logo">
+					<img src="assets/images/logo-white-bg@2x.png" width="80" alt="" class="hidden-xs" />
+					<img src="assets/images/logo@2x.png" width="80" alt="" class="visible-xs" />
 				</a>
 				<a href="#" data-toggle="settings-pane" data-animate="true">
 					<i class="linecons-cog"></i>
@@ -105,7 +105,7 @@
 		
 				<li class="dropdown user-profile">
 					<a href="#" data-toggle="dropdown">
-						<img src="../assets/images/user-1.png" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
+						<img src="assets/images/user-1.png" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
 						<span>
 							Arlind Nushi
 							<i class="fa-angle-down"></i>
@@ -148,7 +148,163 @@ MAIN CONTENT
 			
 		<div class="main-content">
 			
+			<section class="gallery-env">
+			
+				<div class="row">
+				
+					<!-- Gallery Album Optipns and Images -->
+					<div class="col-sm-9 gallery-right">
+						
+						<!-- Album Header -->
+						<div class="album-header">
+							<h2>General</h2>
+							
+							<ul class="album-options list-unstyled list-inline">
+								<li>
+									<input type="checkbox" class="cbr" id="select-all" />
+									<label for="select-all">Select all</label>
+								</li>
+								<li>
+									<a href="#" data-action="trash">
+										<i class="fa-trash"></i>
+										Trash
+									</a>
+								</li>
+							</ul>
+						</div>
+						
+						<!-- Sorting Information -->
+						<div class="album-sorting-info">
+							<div class="album-sorting-info-inner clearfix">
+								<a href="#" class="btn btn-secondary btn-xs btn-single btn-icon btn-icon-standalone pull-right" data-action="sort">
+									<i class="fa-save"></i>
+									<span>Save Current Order</span>
+								</a>
+								
+								<i class="fa-arrows-alt"></i>
+								Drag images to sort them
+							</div>
+						</div>
+						
+						<!-- Album Images -->
+						<div class="album-images row">
+							
+							<!-- Album Image -->
+							<div class="col-md-3 col-sm-4 col-xs-6">
+								<div class="album-image">
+									<a href="#" class="thumb" data-action="edit">
+										<img src="assets/images/album-img-1.png" class="img-responsive" />
+									</a>
+									
+									<a href="#" class="name">
+										<span>IMG_007.jpg</span>
+										<em>10 October 2014</em>
+									</a>
+									
+									<div class="image-options">
+										<a href="#" data-action="edit"><i class="fa-pencil"></i></a>
+										<a href="#" data-action="trash"><i class="fa-trash"></i></a>
+									</div>
+									
+									<div class="image-checkbox">
+										<input type="checkbox" class="cbr" />
+									</div>
+								</div>
+							</div>
 
+							<!-- Album Image -->
+							<div class="col-md-3 col-sm-4 col-xs-6">
+								<div class="album-image">
+									<a href="#" class="thumb" data-action="edit">
+										<div class="img-responsive" style="height:122px; background-color:#FFBA00;"></div>
+									</a>
+									<a href="#" class="name">
+										<span>Folder: Hello</span>
+										<em>10 October 2014</em>
+									</a>
+									
+									<div class="image-options">
+										<a href="#" data-action="edit"><i class="fa-pencil"></i></a>
+										<a href="#" data-action="trash"><i class="fa-trash"></i></a>
+									</div>
+									
+									<div class="image-checkbox">
+										<input type="checkbox" class="cbr" />
+									</div>
+								</div>
+							</div>
+							
+							
+						</div>
+						
+						
+						<button class="btn btn-white btn-block">
+							<i class="fa-bars"></i>
+							Load More Files
+						</button>
+						
+					</div>
+					
+					<!-- Gallery Sidebar -->
+					<div class="col-sm-3 gallery-left">
+						
+						<div class="gallery-sidebar">			
+							
+							<a href="#" class="btn btn-block btn-secondary btn-icon btn-icon-standalone btn-icon-standalone-right">
+								<i class="linecons-photo"></i>
+								<span>Create Folder</span>
+							</a>
+							
+							<ul class="ulFolder list-unstyled">
+								<li class="active">
+									<a href="#">
+										<i class="fa-folder-open-o"></i>
+										<span>General</span>
+									</a>
+									<ul class="ulFolderKid">
+										<li>
+											<a href="#">
+												<i class="fa-folder-o"></i>
+												<span>Hello</span>
+											</a>
+										</li>
+									</ul>
+								</li>
+							<!--
+								<li>
+									<a href="#">
+										<i class="fa-folder-o"></i>
+										<span>Office</span>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<i class="fa-folder-o"></i>
+										<span>Las Vegas</span>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<i class="fa-folder-o"></i>
+										<span>Thailand</span>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<i class="fa-folder-o"></i>
+										<span>Nature</span>
+									</a>
+								</li>
+							-->
+							</ul>
+							
+						</div>
+						
+					</div>
+				
+				</div>
+				
+			</section>
 
 
 		</div>
@@ -166,16 +322,16 @@ END MAIN CONTENT
 
 
 	<!-- Bottom Scripts -->
-	<script src="../assets/js/bootstrap.min.js"></script>
-	<script src="../assets/js/TweenMax.min.js"></script>
-	<script src="../assets/js/resizeable.js"></script>
-	<script src="../assets/js/joinable.js"></script>
-	<script src="../assets/js/xenon-api.js"></script>
-	<script src="../assets/js/xenon-toggles.js"></script>
+	<script src="assets/js/bootstrap.min.js"></script>
+	<script src="assets/js/TweenMax.min.js"></script>
+	<script src="assets/js/resizeable.js"></script>
+	<script src="assets/js/joinable.js"></script>
+	<script src="assets/js/xenon-api.js"></script>
+	<script src="assets/js/xenon-toggles.js"></script>
 
 
 	<!-- JavaScripts initializations and stuff -->
-	<script src="../assets/js/xenon-custom.js"></script>
+	<script src="assets/js/xenon-custom.js"></script>
 
 </body>
 </html>

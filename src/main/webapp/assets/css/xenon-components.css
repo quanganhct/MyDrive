@@ -871,29 +871,35 @@
     margin-top: 30px;
   }
 }
-.gallery-env .gallery-sidebar ul {
+.gallery-env .gallery-sidebar .ulFolder {
   margin: 20px 0;
 }
-.gallery-env .gallery-sidebar ul li a {
+.gallery-env .gallery-sidebar .ulFolder li a {
   display: block;
   padding: 10px 5px;
   border-bottom: 1px solid #dddddd;
   color: #7d7f7f;
 }
-.gallery-env .gallery-sidebar ul li a i {
+.gallery-env .gallery-sidebar .ulFolder li a i {
   display: inline-block;
   margin-right: 2px;
 }
-.gallery-env .gallery-sidebar ul li a:hover {
+.gallery-env .gallery-sidebar .ulFolder li a:hover {
   color: #575858;
 }
-.gallery-env .gallery-sidebar ul li.active > a {
+.gallery-env .gallery-sidebar .ulFolder li.active > a {
   color: #2c2e2f;
   font-weight: bold;
 }
-.gallery-env .gallery-sidebar ul li:last-child > a {
+.gallery-env .gallery-sidebar .ulFolder li:last-child > a {
   border-bottom: 0;
 }
+
+.ulFolderKid {
+list-style: outside none none;
+padding-left: 20px;
+}
+
 .gallery-env .album-header {
   padding: 25px 30px;
   background: #fff;
