@@ -1,7 +1,7 @@
 package net.mydrive.service;
 
 /**
- * @author NGUYEN Quang Anh
+ * @author nguyenquanganh
  */
 import java.util.HashMap;
 import java.util.Map;

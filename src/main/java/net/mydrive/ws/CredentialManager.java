@@ -1,5 +1,10 @@
 package net.mydrive.ws;
 
+/**
+ * @author nguyenquanganh
+ */
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Arrays;
 
@@ -7,8 +12,10 @@ import net.mydrive.service.MyCredentialStore;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeRequestUrl;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 
@@ -59,5 +66,21 @@ public class CredentialManager {
 						.getRedirectUris().get(0), SCOPES).setAccessType(
 				"offline").setApprovalPrompt("force");
 		return url.build();
+	}
+
+	public Credential getNewAccessToken(String code) {
+		try {
+			GoogleTokenResponse response = new GoogleAuthorizationCodeTokenRequest(
+					transport, jsonFactory, clientSecret.getWeb().getClientId(),
+					clientSecret.getWeb().getClientSecret(), code, clientSecret
+							.getWeb().getRedirectUris().get(0)).execute();
+			
+			return buildEmpty().setAccessToken(response.getAccessToken());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 }
