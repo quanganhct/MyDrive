@@ -9,11 +9,24 @@ import java.util.Map;
 import com.google.api.client.auth.oauth2.Credential;
 
 public class MyCredentialStore {
+
+	class CredentialData {
+		String accessToken;
+		String refreshToken;
+		long expireTime;
+
+		public CredentialData(String access, String refresh, long expireTime) {
+			this.accessToken = access;
+			this.refreshToken = refresh;
+			this.expireTime = expireTime;
+		}
+	}
+
 	private static MyCredentialStore myStore = null;
-	private Map<String, Credential> credentialMap;
+	private Map<String, CredentialData> credentialMap;
 
 	private MyCredentialStore() {
-		credentialMap = new HashMap<String, Credential>();
+		credentialMap = new HashMap<String, CredentialData>();
 	}
 
 	public static MyCredentialStore getInstante() {
@@ -22,11 +35,15 @@ public class MyCredentialStore {
 		return myStore;
 	}
 
-	public Credential getUserCredential(String userId) {
-		Credential c = null;
-		if (myStore.credentialMap.containsKey(userId))
-			c = myStore.credentialMap.get(userId);
-		return c;
+	public boolean getUserCredential(String userId, Credential c) {
+		if (myStore.credentialMap.containsKey(userId)) {
+			CredentialData data = myStore.credentialMap.get(userId);
+			c.setAccessToken(data.accessToken);
+			c.setRefreshToken(data.refreshToken);
+			c.setExpirationTimeMilliseconds(data.expireTime);
+			return true;
+		}
+		return false;
 	}
 
 	public void deleteUserCredential(String userId) {
@@ -34,6 +51,8 @@ public class MyCredentialStore {
 	}
 
 	public void saveUserCredential(String userId, Credential c) {
-		myStore.credentialMap.put(userId, c);
+		CredentialData data = new CredentialData(c.getAccessToken(),
+				c.getRefreshToken(), c.getExpirationTimeMilliseconds());
+		myStore.credentialMap.put(userId, data);
 	}
 }
