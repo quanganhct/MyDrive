@@ -73,6 +73,10 @@
         <servlet-name>RestServlet</servlet-name>
         <servlet-class>net.mydrive.ws.RestCallServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AuthoServlet</servlet-name>
+        <servlet-class>net.mydrive.ws.AuthoServlet</servlet-class>
+    </servlet>
     
     <!-- Home Page -->
     <servlet-mapping>
@@ -80,6 +84,10 @@
         <url-pattern>*.html</url-pattern>
     </servlet-mapping>
     
+    <servlet-mapping>
+        <servlet-name>AuthoServlet</servlet-name>
+        <url-pattern>/oauth2/*</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>RestServlet</servlet-name>
         <url-pattern>/rest/*</url-pattern>

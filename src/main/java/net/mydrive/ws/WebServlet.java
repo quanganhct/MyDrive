@@ -15,7 +15,7 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-public class WebServlet extends MyBaseServlet {
+public class WebServlet extends HttpServlet {
 
     /**
      *
@@ -30,9 +30,9 @@ public class WebServlet extends MyBaseServlet {
         throws ServletException, IOException {
         //System.out.println("1 "+request.getRequestURI());
     	
-    	handleCallbackIfRequired(request, response);
+    	//handleCallbackIfRequired(request, response);
     	
-    	loginIfRequired(request, response);
+    	//loginIfRequired(request, response);
     	
         System.out.println("2"+request.getServletPath()+"2");
         
