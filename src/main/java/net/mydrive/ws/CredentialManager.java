@@ -68,7 +68,7 @@ public class CredentialManager {
 		return url.build();
 	}
 
-	public Credential getNewAccessToken(String code) {
+	public Credential retrieve(String code) {
 		try {
 			GoogleTokenResponse response = new GoogleAuthorizationCodeTokenRequest(
 					transport, jsonFactory, clientSecret.getWeb().getClientId(),

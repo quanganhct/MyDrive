@@ -4,16 +4,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import javax.management.RuntimeErrorException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
+import com.google.api.services.oauth2.Oauth2;
+import com.google.api.services.oauth2.model.Userinfoplus;
+import com.google.gson.Gson;
 
 @SuppressWarnings("serial")
 public abstract class MyBaseServlet extends HttpServlet {
@@ -39,13 +43,67 @@ public abstract class MyBaseServlet extends HttpServlet {
 			return GoogleClientSecrets.load(JSON_FACTORY, reader);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			throw new RuntimeErrorException(new Error("No client secret"),
-					"No client secret");
+			throw new RuntimeException("No client secret");
 		}
 	}
-	
-	protected void sendJson(HttpServletResponse resp, int code, Object o){
+
+	protected void sendJson(HttpServletResponse resp, int code, Object o) {
 		resp.setContentType("application/json");
-		//resp.getWriter().print();
+		try {
+			resp.getWriter().print(new Gson().toJson(o).toString());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected void sendJson(HttpServletResponse resp, Object o) {
+		sendJson(resp, 200, o);
+	}
+
+	protected void loginIfRequired(HttpServletRequest req,
+			HttpServletResponse resp) {
+		Credential c = getCredential(req, resp);
+		if (c == null) {
+			try {
+				resp.sendRedirect(credentialManager.getAuthorizationUrl());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				throw new RuntimeException("Cant get redirect to autho page");
+			}
+		}
+	}
+
+	protected Credential getCredential(HttpServletRequest req,
+			HttpServletResponse resp) {
+		String userId = (String) req.getSession().getAttribute(
+				KEY_SESSION_USERID);
+		if (userId != null)
+			return credentialManager.get(userId);
+		return null;
+	}
+
+	protected Oauth2 getOauth2Service(Credential credential) {
+		return new Oauth2.Builder(TRANSPORT, JSON_FACTORY, credential).build();
+	}
+
+	protected void handleCallbackIfRequired(HttpServletRequest req,
+			HttpServletResponse resp) {
+		String code = req.getParameter("code");
+		if (code != null) {
+			Credential c = credentialManager.retrieve(code);
+			Oauth2 service = getOauth2Service(c);
+			
+			
+			try {
+				Userinfoplus inf = service.userinfo().get().execute();
+				String id = inf.getId();
+				credentialManager.save(id, c);
+				req.getSession().setAttribute(KEY_SESSION_USERID, id);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				throw new RuntimeException("Cant handle Oauth2 call back");
+			}
+		}
 	}
 }

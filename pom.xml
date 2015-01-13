@@ -78,6 +78,13 @@
   			<artifactId>google-api-client-gson</artifactId>
   			<version>1.18.0-rc</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-oauth2</artifactId>
+			<version>v2-rev74-1.18.0-rc</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>
