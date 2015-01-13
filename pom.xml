@@ -72,6 +72,12 @@
 			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<dependency>
+  			<groupId>com.google.api-client</groupId>
+  			<artifactId>google-api-client-gson</artifactId>
+  			<version>1.18.0-rc</version>
+		</dependency>
 	</dependencies>
 
 	<build>
