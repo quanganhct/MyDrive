@@ -88,7 +88,7 @@ public abstract class MyBaseServlet extends HttpServlet {
 	}
 
 	protected void handleCallbackIfRequired(HttpServletRequest req,
-			HttpServletResponse resp) {
+			HttpServletResponse resp) throws IOException {
 		String code = req.getParameter("code");
 		if (code != null) {
 			Credential c = credentialManager.retrieve(code);
@@ -100,10 +100,14 @@ public abstract class MyBaseServlet extends HttpServlet {
 				String id = inf.getId();
 				credentialManager.save(id, c);
 				req.getSession().setAttribute(KEY_SESSION_USERID, id);
+                                resp.sendRedirect("/index");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
+                            
 				throw new RuntimeException("Cant handle Oauth2 call back");
 			}
-		}
+		}else{
+                    resp.sendRedirect("/login");
+                }
 	}
 }

@@ -163,7 +163,7 @@
 	
 					
 					<div class="form-group">
-						<a href="oauth2/login" class="btn btn-primary btn-block text-left">
+						<a href="oauth/login" class="btn btn-primary btn-block text-left">
 							<i class="fa-google-plus"></i>
 							Log In with Google
 						</a>

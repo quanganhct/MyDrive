@@ -37,10 +37,22 @@ public class WebServlet extends HttpServlet {
         System.out.println("2"+request.getServletPath()+"2");
         
         
-        if(request.getServletPath().equals("/index.html")){
-           request.getRequestDispatcher("index.ftl").forward(request, response);
+        if(request.getServletPath().equals("/index")){
+            if(request.getSession().getAttribute("user_id") == null){
+                //response.sendRedirect("/login");
+                request.getRequestDispatcher("login.html").forward(request, response);
+            }else{
+                //response.sendRedirect("/index.html");
+                request.getRequestDispatcher("index.html").forward(request, response);
+            }
+           
+        }else if(request.getServletPath().equals("/login")){
+           //response.sendRedirect("/login.html");
+            request.getRequestDispatcher("login.html").forward(request, response);
         }else{
             System.out.println("Error 404");
+           // response.sendRedirect("/login.html");
+            request.getRequestDispatcher("login.html").forward(request, response);
         }
     }
 }
