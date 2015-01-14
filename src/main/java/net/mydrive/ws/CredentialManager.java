@@ -71,16 +71,21 @@ public class CredentialManager {
 	public Credential retrieve(String code) {
 		try {
 			GoogleTokenResponse response = new GoogleAuthorizationCodeTokenRequest(
-					transport, jsonFactory, clientSecret.getWeb().getClientId(),
-					clientSecret.getWeb().getClientSecret(), code, clientSecret
-							.getWeb().getRedirectUris().get(0)).execute();
-			
-			return buildEmpty().setAccessToken(response.getAccessToken());
+					transport, jsonFactory,
+					clientSecret.getWeb().getClientId(), clientSecret.getWeb()
+							.getClientSecret(), code, clientSecret.getWeb()
+							.getRedirectUris().get(0)).execute();
+
+			return buildEmpty()
+					.setAccessToken(response.getAccessToken())
+					.setRefreshToken(response.getRefreshToken())
+					.setExpirationTimeMilliseconds(
+							response.getExpiresInSeconds() * 1000);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 }
