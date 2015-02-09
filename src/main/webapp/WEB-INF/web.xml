@@ -29,13 +29,20 @@
         <servlet-class>net.mydrive.ws.RestCallServlet</servlet-class>
     </servlet>
     
-     <servlet>
-        <servlet-name>RestServlet</servlet-name>
-        <servlet-class>net.mydrive.ws.RestCallServlet</servlet-class>
-    </servlet>
     <servlet>
         <servlet-name>AuthoServlet</servlet-name>
         <servlet-class>net.mydrive.ws.AuthoServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>Jersey REST Service</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+     <!-- Register resources and providers under com.vogella.jersey.first package. -->
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>com.vogella.jersey.first</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
     </servlet>
     
     <!-- Home Page -->
@@ -54,7 +61,7 @@
         <url-pattern>/oauth2/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>RestServlet</servlet-name>
+        <servlet-name>Jersey REST Service</servlet-name>
         <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
     

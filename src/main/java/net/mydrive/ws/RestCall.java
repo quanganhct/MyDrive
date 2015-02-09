@@ -8,13 +8,12 @@ package net.mydrive.ws;
 
 /**
  *
- * @author guillaumerebmann
+ * @author guillaumerebmann, nguyenquanganh
  */
 
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.ws.rs.Path;
 
-public class RestCallServlet extends HttpServlet {
+@Path("/command")
+public class RestCall {
     
 }
