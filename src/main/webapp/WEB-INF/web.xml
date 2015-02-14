@@ -24,10 +24,6 @@
         <servlet-class>net.mydrive.ws.WebServlet</servlet-class>
     </servlet>
     
-    <servlet>
-        <servlet-name>RestServlet</servlet-name>
-        <servlet-class>net.mydrive.ws.RestCallServlet</servlet-class>
-    </servlet>
     
     <servlet>
         <servlet-name>AuthoServlet</servlet-name>
