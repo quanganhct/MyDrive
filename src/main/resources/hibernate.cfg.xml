@@ -20,8 +20,13 @@
    <property name="hibernate.connection.password">
       quanganh707404101
    </property>
+
+   <property name="cache.provider_class">
+      org.hibernate.NoCacheProvider
+   </property>
+   
    <property name="hibernate.hbm2ddl.auto">
-      create
+      update
    </property>
 
     <mapping class="net.mydrive.entities.MyFile"/>

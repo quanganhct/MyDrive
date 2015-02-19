@@ -19,7 +19,7 @@ import javax.persistence.Table;
 import com.google.gson.JsonObject;
 
 @Entity
-@Table(name = "MyChunk")
+@Table(name = "mychunk")
 public class MyChunk implements Serializable{
 
 	private Integer Id;

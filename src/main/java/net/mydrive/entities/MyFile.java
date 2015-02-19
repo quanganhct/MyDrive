@@ -22,7 +22,7 @@ import javax.persistence.Table;
 import com.google.gson.JsonObject;
 
 @Entity
-@Table(name="MyFile")
+@Table(name="myfile")
 public class MyFile implements Serializable{
 	
 	private	String file_uuid;
