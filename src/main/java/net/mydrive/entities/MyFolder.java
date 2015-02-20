@@ -23,6 +23,8 @@ import javax.persistence.Table;
 @Table(name = "myfolder")
 public class MyFolder {
 
+	private String folder_uuid;
+	
 	private String folder_url;
 
 	private List<MyFile> listFiles = new ArrayList<MyFile>();
@@ -30,6 +32,15 @@ public class MyFolder {
 	private User myUser;
 
 	@Id
+	@Column(name = "folder_uuid")
+	public String getFolder_uuid() {
+		return folder_uuid;
+	}
+
+	public void setFolder_uuid(String folder_uuid) {
+		this.folder_uuid = folder_uuid;
+	}
+
 	@Column(name = "folder_url")
 	public String getFolder_url() {
 		return folder_url;

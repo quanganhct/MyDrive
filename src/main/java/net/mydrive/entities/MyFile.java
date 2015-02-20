@@ -93,7 +93,7 @@ public class MyFile implements Serializable {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "folder_url")
+	@JoinColumn(name = "folder_uuid")
 	public MyFolder getMyFolder() {
 		return myFolder;
 	}

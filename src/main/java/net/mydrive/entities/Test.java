@@ -36,12 +36,12 @@ public class Test {
 //		
 //		session.save(c2);
 		
-		Query r =  session.createQuery("from MyFile where file_uuid = :uuid");
-		r.setParameter("uuid", "123300");
-		List list = r.list();
+//		Query r =  session.createQuery("from MyFile where file_uuid = :uuid");
+//		r.setParameter("uuid", "123300");
+//		List list = r.list();
 		
-		MyFile f = (MyFile)list.get(0);
-		System.out.println(f.getList_chunk().size());
+//		MyFile f = (MyFile)list.get(0);
+//		System.out.println(f.getList_chunk().size());
 		
 		//session.getTransaction().commit();
 		
