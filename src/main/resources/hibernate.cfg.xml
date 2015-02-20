@@ -29,7 +29,10 @@
       update
    </property>
 
+    <mapping class="net.mydrive.entities.User"/>
+    <mapping class="net.mydrive.entities.MyFolder"/>
     <mapping class="net.mydrive.entities.MyFile"/>
     <mapping class="net.mydrive.entities.MyChunk"/>
+
   </session-factory>
 </hibernate-configuration>
