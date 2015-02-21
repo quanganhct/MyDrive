@@ -11,16 +11,26 @@
 	<title>DreamTeam Drive</title>
 
 	<!--<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Arimo:400,700,400italic"> -->
-	<link rel="stylesheet" href="../assets/css/fonts/linecons/css/linecons.css">
-	<link rel="stylesheet" href="../assets/css/fonts/fontawesome/css/font-awesome.min.css">
-	<link rel="stylesheet" href="../assets/css/bootstrap.css">
-	<link rel="stylesheet" href="../assets/css/xenon-core.css">
-	<link rel="stylesheet" href="../assets/css/xenon-forms.css">
-	<link rel="stylesheet" href="../assets/css/xenon-components.css">
-	<link rel="stylesheet" href="../assets/css/xenon-skins.css">
-	<link rel="stylesheet" href="../assets/css/custom.css">
+	<link rel="stylesheet" href="assets/css/fonts/linecons/css/linecons.css">
+	<link rel="stylesheet" href="assets/css/fonts/fontawesome/css/font-awesome.min.css">
+	<link rel="stylesheet" href="assets/css/bootstrap.css">
+	<link rel="stylesheet" href="assets/css/xenon-core.css">
+	<link rel="stylesheet" href="assets/css/xenon-forms.css">
+	<link rel="stylesheet" href="assets/css/xenon-components.css">
+	<link rel="stylesheet" href="assets/css/xenon-skins.css">
+	<link rel="stylesheet" href="assets/css/custom.css">
+	<link rel="stylesheet" href="assets/fileupload/jquery.fileupload.css">
+	
+	<link href="assets/css/jquery-ui.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="assets/fancytree/skin-win7/ui.fancytree.css">
+	<style type="text/css">
+	.ui-menu {
+			width: 100px;
+			font-size: 63%;
+			z-index: 60; /* over ext-wide titles */
+		}
+	</style>
 
-	<script src="../assets/js/jquery-1.11.1.min.js"></script>
 
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
@@ -38,9 +48,9 @@
 		
 			<!-- Navbar Brand -->
 			<div class="navbar-brand">
-				<a href="dashboard-1.html" class="logo">
-					<img src="../assets/images/logo-white-bg@2x.png" width="80" alt="" class="hidden-xs" />
-					<img src="../assets/images/logo@2x.png" width="80" alt="" class="visible-xs" />
+				<a href="index.html" class="logo">
+					<img src="assets/images/logo-white-bg@2x.png" width="80" alt="" class="hidden-xs" />
+					<img src="assets/images/logo@2x.png" width="80" alt="" class="visible-xs" />
 				</a>
 				<a href="#" data-toggle="settings-pane" data-animate="true">
 					<i class="linecons-cog"></i>
@@ -105,7 +115,7 @@
 		
 				<li class="dropdown user-profile">
 					<a href="#" data-toggle="dropdown">
-						<img src="../assets/images/user-1.png" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
+						<img src="assets/images/user-1.png" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
 						<span>
 							Arlind Nushi
 							<i class="fa-angle-down"></i>
@@ -143,13 +153,63 @@
 
 MAIN CONTENT
 
--->
+-->	
+	
 	<div class="page-container"><!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
 			
 		<div class="main-content">
 			
+			<section class="gallery-env">
+			
+				<div class="row">
+				
+					<!-- Gallery Album Optipns and Images -->
+					<div class="col-sm-12 gallery-right">
+						<!-- The fileinput-button span is used to style the file input field as button -->
+					    <form id="fileupload" action="#" method="POST" enctype="multipart/form-data">
+					        <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+					        <div class="row fileupload-buttonbar">
+					            <div class="col-lg-7">
+					                <!-- The fileinput-button span is used to style the file input field as button -->
+					                <span class="btn btn-success fileinput-button">
+					                    <i class="glyphicon glyphicon-plus"></i>
+					                    <span>Ajout de Fichier ...</span>
+					                    <input type="file" name="files[]" multiple>
+					                </span>
+					                <button type="button" class="btn btn-warning folderCreate">
+					                    <i class="glyphicon glyphicon-trash"></i>
+					                    <span>Ajout d'un dossier</span>
+					                </button>
+					                <button type="button" class="btn btn-danger supprimer">
+					                    <i class="glyphicon glyphicon-trash"></i>
+					                    <span>Suprimer</span>
+					                </button>
+					                <!-- The global file processing state -->
+					                <span class="fileupload-process"></span>
+					            </div>
+					            <!-- The global progress state -->
+					            <div class="col-lg-5 fileupload-progress fade">
+					                <!-- The global progress bar -->
+					                <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+					                    <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+					                </div>
+					                <!-- The extended global progress state -->
+					                <div class="progress-extended">&nbsp;</div>
+					            </div>
+					        </div>
+					        <!-- The table listing the files available for upload/download -->
 
+							<div class="row files" >
 
+							</div>
+					        
+					    </form>
+					</div>
+				
+				</div>
+				
+			</section>
+			<a style="display:none;" href="" id='hiddenDownload'></a>
 
 		</div>
 		
@@ -161,21 +221,138 @@ END MAIN CONTENT
 
 -->	
 	
+
+
+
+
+
 	
+	
+<!-- The template to display files available for upload -->
+<script id="template-upload" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+   <div class="col-sm-3 template-upload fade">
+	<div class="xe-widget xe-vertical-counter xe-vertical-counter-white">
 
+		<div class="xe-icon">
+			<i class="linecons-doc"></i>
+		</div>
+		
+		<div class="xe-label">
+			<p class="size">Processing...</p>
+            <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            	<div class="progress-bar progress-bar-success" style="width:0%;"></div>
+            </div>
+            <p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.name%}</p>
+            <strong class="error text-danger"></strong>
+		</div>
+	</div>	
+	<div class="xe-data-files" data-id="{%=file.token%}" data-name="{%=file.name%}"></div>
+</div>
+{% } %}
+</script>
+<!-- The template to display files available for download -->
+<script id="template-download" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+<div class="col-sm-3 template-download fade in">
+	<div class="xe-widget xe-vertical-counter xe-vertical-counter-white xe-file">
 
+		<div class="xe-icon">
+			<i class="linecons-doc"></i>
+		</div>
+		
+		<div class="xe-label">
+			<a href="{%=file.token%}" class="btn btn-secondary">Download</a>
+			{% if (file.origin == null) { %}
+			<p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.name%}</p>
+			{% } else { %}
+			<p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.origin%}</p>
+			{% } %}
+		</div>
+	</div>	
 
-	<!-- Bottom Scripts -->
-	<script src="../assets/js/bootstrap.min.js"></script>
-	<script src="../assets/js/TweenMax.min.js"></script>
-	<script src="../assets/js/resizeable.js"></script>
-	<script src="../assets/js/joinable.js"></script>
-	<script src="../assets/js/xenon-api.js"></script>
-	<script src="../assets/js/xenon-toggles.js"></script>
+	{% if (file.origin == null) { %}
+	<div class="xe-data-files" data-token="{%=file.token%}" data-name="{%=file.name%}">
+		<button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="delete/{%=file.token%}"></button>
+	</div>
+	{% } else { %}
+	<div class="xe-data-files" data-token="{%=file.token%}" data-name="{%=file.origin%}">
+		<button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="delete/{%=file.token%}"></button>
+	</div>
+	{% } %}
+	
+</div>
+{% } %}
+</script>
+<script id="template-folder" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+<div class="col-sm-3 template-download fade in">
+	<div class="xe-widget xe-vertical-counter xe-vertical-counter-warning xe-folder" data-key="{%=file.id%}">
 
+		<div class="xe-icon">
+			<i class="linecons-wallet"></i>
+		</div>
+		
+		<div class="xe-label">
+			<p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.name%}</p>
+		</div>
+	</div>	
+	
+</div>
+{% } %}
+</script>
+<script id="template-main" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+<div class="col-sm-3 template-download fade in">
+	<div class="xe-widget xe-vertical-counter xe-vertical-counter-purple xe-main" data-key="{%=file.id%}">
 
-	<!-- JavaScripts initializations and stuff -->
-	<script src="../assets/js/xenon-custom.js"></script>
+		<div class="xe-icon">
+			<i class="linecons-wallet"></i>
+		</div>
+		
+		<div class="xe-label">
+			<p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.name%}</p>
+		</div>
+	</div>	
+	
+</div>
+{% } %}
+</script>
+<script src="assets/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="assets/js/jquery-ui.min.js"></script>
+<!-- Bottom Scripts -->
+<script src="assets/js/bootstrap.min.js"></script>
+<script src="assets/js/TweenMax.min.js"></script>
+<script src="assets/js/resizeable.js"></script>
+<script src="assets/js/joinable.js"></script>
+<script src="assets/js/xenon-api.js"></script>
+<script src="assets/js/xenon-toggles.js"></script>
+<script src="assets/js/fso.min.js"></script>
+
+<script type="text/javascript" src="assets/fancytree/jquery.fancytree.js"></script>
+<script type="text/javascript" src="assets/fancytree/jquery.fancytree.dnd.js"></script>
+<script type="text/javascript" src="assets/fancytree/jquery.fancytree.edit.js"></script>
+<script type="text/javascript" src="assets/js/jquery.ui-contextmenu.js"></script>
+<!-- JavaScripts initializations and stuff -->
+<script src="assets/js/xenon-custom.js"></script>
+<!-- The Templates plugin is included to render the upload/download listings -->
+<script src="assets/js/tmpl.min.js"></script>
+<script src="assets/js/load-image.all.min.js"></script>
+<!-- <script src="assets/js/canvas-to-blob.min.js"></script> -->
+<script src="assets/fileupload/jquery.iframe-transport.js"></script>
+<script src="assets/fileupload/jquery.fileupload.js"></script>
+<script src="assets/fileupload/jquery.fileupload-process.js"></script>
+<script src="assets/fileupload/jquery.fileupload-image.js"></script>
+<script src="assets/fileupload/jquery.fileupload-audio.js"></script>
+<script src="assets/fileupload/jquery.fileupload-video.js"></script>
+<script src="assets/fileupload/jquery.fileupload-validate.js"></script>
+<script src="assets/fileupload/jquery.fileupload-ui.js"></script>
+
+<script src="assets/js/md5.min.js"></script>
+<script src="assets/js/fileDownload.js"></script>
+<script type="text/javascript" src="assets/js/moment.min.js"></script>
+<script src="assets/js/FileSaver.js"></script>
+<script src="assets/main.js"></script>
 
 </body>
 </html>
