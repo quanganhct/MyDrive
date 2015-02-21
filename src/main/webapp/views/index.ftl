@@ -176,7 +176,7 @@ MAIN CONTENT
 					                    <span>Ajout de Fichier ...</span>
 					                    <input type="file" name="files[]" multiple>
 					                </span>
-					                <button type="button" class="btn btn-warning folderCreate">
+					                <button type="button" class="btn btn-warning folderCreate" onclick="$('#modal-folder').modal('show', {backdrop: 'static'});">
 					                    <i class="glyphicon glyphicon-trash"></i>
 					                    <span>Ajout d'un dossier</span>
 					                </button>
@@ -222,7 +222,29 @@ END MAIN CONTENT
 -->	
 	
 
-
+<div class="modal fade" id="modal-folder" data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				
+				<div class="modal-header">
+					<h4 class="modal-title">Information</h4>
+				</div>
+				
+				<div class="modal-body">
+				
+					<label class="col-sm-2 control-label" for="field-1">Nom du folder</label>
+					<div class="col-sm-10">
+						<input id="folder-name" class="form-control" type="text" placeholder="Nom">
+					</div>
+					
+				</div>
+				
+				<div class="modal-footer">
+					<button type="button" class="btn btn-info closeCreateFolder">Continue</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 
 
@@ -231,7 +253,7 @@ END MAIN CONTENT
 <!-- The template to display files available for upload -->
 <script id="template-upload" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
-   <div class="col-sm-3 template-upload fade">
+   <div class="col-sm-3 template-upload fade ">
 	<div class="xe-widget xe-vertical-counter xe-vertical-counter-white">
 
 		<div class="xe-icon">
@@ -253,6 +275,38 @@ END MAIN CONTENT
 </script>
 <!-- The template to display files available for download -->
 <script id="template-download" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+<div class="col-sm-3 template-download fade ">
+	<div class="xe-widget xe-vertical-counter xe-vertical-counter-white xe-file">
+
+		<div class="xe-icon">
+			<i class="linecons-doc"></i>
+		</div>
+		
+		<div class="xe-label">
+			<a href="{%=file.token%}" class="btn btn-secondary">Download</a>
+			{% if (file.origin == null) { %}
+			<p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.name%}</p>
+			{% } else { %}
+			<p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.origin%}</p>
+			{% } %}
+		</div>
+	</div>	
+
+	{% if (file.origin == null) { %}
+	<div class="xe-data-files" data-token="{%=file.token%}" data-name="{%=file.name%}">
+		<button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="delete/{%=file.token%}"></button>
+	</div>
+	{% } else { %}
+	<div class="xe-data-files" data-token="{%=file.token%}" data-name="{%=file.origin%}">
+		<button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="delete/{%=file.token%}"></button>
+	</div>
+	{% } %}
+	
+</div>
+{% } %}
+</script>
+<script id="template-file" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
 <div class="col-sm-3 template-download fade in">
 	<div class="xe-widget xe-vertical-counter xe-vertical-counter-white xe-file">
@@ -286,7 +340,7 @@ END MAIN CONTENT
 </script>
 <script id="template-folder" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
-<div class="col-sm-3 template-download fade in">
+<div class="col-sm-3 fade in">
 	<div class="xe-widget xe-vertical-counter xe-vertical-counter-warning xe-folder" data-key="{%=file.id%}">
 
 		<div class="xe-icon">
@@ -303,7 +357,7 @@ END MAIN CONTENT
 </script>
 <script id="template-main" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
-<div class="col-sm-3 template-download fade in">
+<div class="col-sm-3  fade in">
 	<div class="xe-widget xe-vertical-counter xe-vertical-counter-purple xe-main" data-key="{%=file.id%}">
 
 		<div class="xe-icon">

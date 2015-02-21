@@ -1,4 +1,37 @@
 $(function() {
+
+			var remote = {options:{
+				loadUrl:"/uploaded/files/",
+				uploadUrl:"/upload?uuid=",
+				getFolderJson:"/folder/get",
+				saveFolderJson:"/folder/save"
+			}};
+
+
+
+				remote.getAllFiles = function(files_token,callback){
+					$.get('allfiles',{files_token:files_token},function(result){
+
+
+							console.log(result);
+							 app.load(result.data,0,function(resultLoad){
+								
+									console.log(resultLoad);
+									var url = app.fso.toURL('test2.zip');
+									$.fileDownload(url);
+									app.fso.createQueue().rm('test2.zip').execute();
+							});
+							
+							return callback(result);
+					});
+				}
+
+
+
+
+
+
+
 			var eventObject = {currentObject:null,numberOfClick:0,currentAction:null}
 
 				eventObject._checkIfSame = function(object){
@@ -43,26 +76,15 @@ $(function() {
 				$('body').on('click','.downloadFile',function(e){
 					e.preventDefault();
 					eventObject.setEvent($(this),'download');
-					console.log($(this).attr('href'));
-					//console.log(new Date());
-					//console.log(moment().format("x"));
-					$.get('allfiles',{files_token:$(this).attr('href')},function(result){
-
-
-							console.log(result);
-							/* app.load(result.data,0,function(resultLoad){
-								
-									console.log(resultLoad);
-									var url = app.fso.toURL('test2.zip');
-									$.fileDownload(url);
-									app.fso.createQueue().rm('test2.zip').execute();
-							});
-							*/
+					console.log($(this).attr('href'));		
+						
+					remote.getAllFiles($(this).attr('href'),function(e){
+						console.log("object loaded");
 					});
 				});
 
+				/*
 				$('body').on('click','.xe-file',function(e){
-					//console.log(e);
 					e.preventDefault();
 					eventObject.setEvent($(this),'select');
 
@@ -75,13 +97,13 @@ $(function() {
 						$(this).addClass("xe-vertical-counter-white");
 						$(this).removeClass("xe-vertical-counter-blue");
 					}
-					
 				});
+*/
 
 				$('body').on('click','.xe-folder',function(e){
 						e.preventDefault();
 						eventObject.setEvent($(this),'open');
-					console.log("Open Folder");
+						console.log("Open Folder");
 
 					var key = $(this).data('key');
 						eventObject.cleanAll();
@@ -90,7 +112,6 @@ $(function() {
 						folder.displayMain(key);
 						folder.displayFolders(key);
 						folder.displayFiles(key);
-
 				});
 
 				$('body').on('click','.xe-main',function(e){
@@ -103,26 +124,37 @@ $(function() {
 
 						app.cleanDrop();
 						var current = folder.getCurrent();
+						
 						folder.displayMain(current.parent);
 						folder.displayFolders(current.parent);
 						folder.displayFiles(current.parent);
-
+						folder.setCurrent(current.parent);
+						console.log(folder.getCurrent());
 				});
 
-
+				$(".closeCreateFolder").on('click',function(e){
+					var name = $('#folder-name').val();
+					if(name == ""){
+						name ="folder";
+					}
+					console.log("NAME: "+name);
+					folder.createFolder(name,function(){
+				   			$('#modal-folder').modal("hide");	
+				   });
+				})
 
 				$('body').on('click','.supprimer',function(e){
 					e.preventDefault();
-					eventObject.setEvent($(this),'delete');
-					console.log("DELETE");
-					app.delete();
+					folder.saveFolderJson(function(e){
+
+					});
 				});
 
 ///////////////////////////////////////////////////
 /// Folder System Script  ///
 //////////////////////////////////////////////////
 				var folder = {
-					structure : [{id:"0",name:null,parent:null,files:[]},{id:"1",name:"Folder 1",parent:"0",files:[{"name":"[ www.Cpasbien.pw ] Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip","size":"40000000","modified":null,"deleteType":"DELETE","contentRange":null,"maxSize":null,"origin":null,"token":"c831a59a3c5fae048399ae750b315d08","url":"http://test.com:5000/uploaded/files/%5B%20www.Cpasbien.pw%20%5D%20Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip","deleteUrl":"http://test.com:5000/uploaded/files/%5B%20www.Cpasbien.pw%20%5D%20Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip"},{"name":"[ www.Cpasbien.pw ] Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip","size":"40000000","modified":null,"deleteType":"DELETE","contentRange":null,"maxSize":null,"origin":null,"token":"16c1da1a265253103ae4e46ba16a0f40","url":"http://test.com:5000/uploaded/files/%5B%20www.Cpasbien.pw%20%5D%20Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip","deleteUrl":"http://test.com:5000/uploaded/files/%5B%20www.Cpasbien.pw%20%5D%20Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip"},{"name":"[ www.Cpasbien.pw ] Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip","size":"40000000","modified":null,"deleteType":"DELETE","contentRange":null,"maxSize":null,"origin":null,"token":"a55c1c0bf8c49a5e7d7f02e9aa1e1461","url":"http://test.com:5000/uploaded/files/%5B%20www.Cpasbien.pw%20%5D%20Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip","deleteUrl":"http://test.com:5000/uploaded/files/%5B%20www.Cpasbien.pw%20%5D%20Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip"}]},{id:"2",name:"Folder 2",parent:"0",files:[]},{id:"3",name:"Folder 3",parent:"1",files:[]},{id:"4",name:"Folder 4",parent:"1",files:[]},{id:"5",name:"Folder 5",parent:"2",files:[]},{id:"6",name:"Folder 2",parent:"2",files:[{"name":"[ www.Cpasbien.pw ] Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip","size":"40000000","modified":null,"deleteType":"DELETE","contentRange":null,"maxSize":null,"origin":null,"token":"c831a59a3c5fae048399ae750b315d08","url":"http://test.com:5000/uploaded/files/%5B%20www.Cpasbien.pw%20%5D%20Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip","deleteUrl":"http://test.com:5000/uploaded/files/%5B%20www.Cpasbien.pw%20%5D%20Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip"},{"name":"[ www.Cpasbien.pw ] Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip","size":"40000000","modified":null,"deleteType":"DELETE","contentRange":null,"maxSize":null,"origin":null,"token":"16c1da1a265253103ae4e46ba16a0f40","url":"http://test.com:5000/uploaded/files/%5B%20www.Cpasbien.pw%20%5D%20Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip","deleteUrl":"http://test.com:5000/uploaded/files/%5B%20www.Cpasbien.pw%20%5D%20Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip"},{"name":"[ www.Cpasbien.pw ] Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip","size":"40000000","modified":null,"deleteType":"DELETE","contentRange":null,"maxSize":null,"origin":null,"token":"a55c1c0bf8c49a5e7d7f02e9aa1e1461","url":"http://test.com:5000/uploaded/files/%5B%20www.Cpasbien.pw%20%5D%20Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip","deleteUrl":"http://test.com:5000/uploaded/files/%5B%20www.Cpasbien.pw%20%5D%20Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip"}]},{id:"7",name:"Folder 7",parent:"2",files:[]}],
+					structure : null,
 					current : null
 				}
 
@@ -133,14 +165,41 @@ $(function() {
 					};
 					return data;
 				}
+
+				folder.setStructure = function(object){
+					folder.structure = object;
+				}
 				folder.setCurrent = function(key){
 					folder.findElementByKey(key,function(e){
-						console.log(folder);
+						//console.log(folder);
 						folder.current = e;
 					})
 				}
 				folder.getCurrent = function(){
 					return folder.current;
+				}
+
+				folder.getHigherId = function(callback){
+					findElementRecurrent = function(currentStructure,result,callback){
+						var data = currentStructure;
+						if(data.length == 0){
+							return callback(result);
+						}
+						var object = data[0];
+						if(object.id > result ){
+							result = object.id;
+							
+						}
+							data.shift();
+							findElementRecurrent(data,result,callback);
+						
+					}
+					
+					 findElementRecurrent(folder.getStructure(),0,function(e){
+						//console.log("Result By Key");
+						//console.log(e);
+						return callback(e);
+					});
 				}
 				folder.setChildren = function(object,child){
 
@@ -212,7 +271,7 @@ $(function() {
 
 					findChildrenRecurrent(parent,folder.getStructure(),[],function(e){
 						console.log("Result Children");
-						console.log(e);
+						//console.log(e);
 						return callback(e);
 					});
 				}
@@ -224,12 +283,28 @@ $(function() {
 					});
 				}
 
+				folder.createFolder = function(name,callback){
+					var current = folder.getCurrent();
+					console.log("current");
+					console.log(current);
+					folder.getHigherId(function(e){
+						folder.structure.push({ id: e+1, name: name, parent: current.id, files: [] });
+						folder.saveFolderJson(function(e){
+							return callback(true);
+						})
+					})
+					
+				}
+
 				folder.displayFiles = function(key){
 					folder.findElementByKey(key,function(e){
-						console.log("displayFiles");
-						console.log(e);
-						var render = tmpl("template-download")({files:e.files});
-						console.log(render);
+						//console.log("displayFiles");
+						//console.log(e);
+						if(e.files.length == 0){
+							return;
+						}
+						var render = tmpl("template-file")({files:e.files});
+						//console.log(render);
 						$(".files").append(render);
 					});
 				}
@@ -246,14 +321,39 @@ $(function() {
 					});
 						
 				}
+				folder.saveFolderJson = function(callback){
+					$.get(remote.options.saveFolderJson,{data:JSON.stringify({folder:folder.getStructure()})},function(e){
+						return callback(e);
+					});
+					
+				}
+
+				folder.getFolderJson = function(callback){
+					$.get(remote.options.getFolderJson,function(e){
+						console.log(e);
+
+						folder.setStructure(e.folder);
+						return callback(e);
+					})
+					/* Data look like : Save it like a json, it's important to not consider it like a java object but like a text when u save it and return it like a json
+
+					{ folder: [ { id: '0', name: null, parent: null, files: [] },{ id: '1', name: "hello", parent: 0, files: [] } ] }
+
+
+
+
+					*/
+				}
 				
 				folder.init = function(){
 					//folder.findElementByKey("7");
 					//folder.findElementByName("Folder 2");
+					folder.getFolderJson(function(e){
+						folder.setCurrent(0);
+						folder.displayFolders(0);
+						folder.displayFiles(0);
+					});
 					
-					folder.setCurrent(0);
-					folder.displayFolders(0);
-					folder.displayFiles(0);
 				}
 
 
@@ -284,8 +384,26 @@ $(function() {
     $('#fileupload').bind('fileuploadsubmit', function (e, data) {
        console.log(moment().format("x"));
        var time = moment().format("x");
-       data.url = "/upload?uuid="+time;
-	   
+       data.url = remote.options.uploadUrl+time;
+      
+       
+
+	});
+
+	$("#fileupload").bind('fileuploaddone', function(e, data){
+		 console.log("current");
+         console.log(folder.getCurrent());
+         console.log("fileuploadsubmit -> Transfert into the JSON Folder System");
+			var current = folder.getCurrent();
+			console.log(data.result);
+	       for (var j = 0; j < data.result.files.length; j++) {
+	   			current.files.push(data.result.files[j]);
+	   			console.log("Data pushed");
+	   		};
+	   		console.log(folder.structure);
+	   		folder.saveFolderJson(function(e){
+	   			alert("Json Folder Saved");
+	   		})
 	});
 	
 	$('#fileupload').bind('fileuploaddestroy', function (e, data) {
@@ -293,22 +411,7 @@ $(function() {
 		console.log("DELETE");
 		console.log(data);
 	});
-
-      $('#fileupload').addClass('fileupload-processing');
-        $.ajax({
-            // Uncomment the following to send cross-domain cookies:
-            //xhrFields: {withCredentials: true},
-            url: $('#fileupload').fileupload('option','url'),
-            dataType: 'json',
-            context: $('#fileupload')[0]
-        }).always(function () {
-            $(this).removeClass('fileupload-processing');
-        }).done(function (result) {
-          //alert($('#fileupload')[0]);
-          listOfFiles = result;
-          app.run();
-            //$(this).fileupload('option', 'done').call(this, $.Event('done'), {result: result});
-        });
+	
 
 
         $(".files").contextmenu({
@@ -333,7 +436,7 @@ $(function() {
 					console.log("before open");
 				},
 				select: function(event, ui) {
-					var node = $.ui.fancytree.getNode(ui.target);
+					//var node = $.ui.fancytree.getNode(ui.target);
 					//alert("select " + ui.cmd + " on " + node);
 				}
 			});
