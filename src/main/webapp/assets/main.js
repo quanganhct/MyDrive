@@ -33,7 +33,13 @@ getFolderJson Format : JSON (Juste convertir le text en json et le returner)
   ] 
 }
 
+For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 
+{"files":[{"name":"f4a61caa6d9392e99f9ffa994b2bdaef","size":100000000,"type":"application/zip","deleteType":"DELETE","contentRange":"0","maxSize":"362923425","origin":"[ www.Cpasbien.pw ] Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip","token":"05fa67d233166a71790fed6ae76fcda0","url":"http://test.com:5000/uploaded/files/f4a61caa6d9392e99f9ffa994b2bdaef","deleteUrl":"http://test.com:5000/uploaded/files/f4a61caa6d9392e99f9ffa994b2bdaef"}]}
+
+{"files":[{"name":"f09eeeb11f978685325543fcd5b2a6d7","size":100000000,"type":"application/zip","deleteType":"DELETE","contentRange":"100000000","maxSize":"362923425","origin":"[ www.Cpasbien.pw ] Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip","token":"05fa67d233166a71790fed6ae76fcda0","url":"http://test.com:5000/uploaded/files/f09eeeb11f978685325543fcd5b2a6d7","deleteUrl":"http://test.com:5000/uploaded/files/f09eeeb11f978685325543fcd5b2a6d7"}]}
+
+{"files":[{"name":"59a5f7ff684f23fcc6a382e099974de6","size":62923425,"type":"application/zip","deleteType":"DELETE","contentRange":"300000000","maxSize":"362923425","origin":"[ www.Cpasbien.pw ] Arrow.S03E13.FASTSUB.VOSTFR.HDTV.XviD-ATN.avi.zip","token":"05fa67d233166a71790fed6ae76fcda0","url":"http://test.com:5000/uploaded/files/59a5f7ff684f23fcc6a382e099974de6","deleteUrl":"http://test.com:5000/uploaded/files/59a5f7ff684f23fcc6a382e099974de6"}]}
 			*/
 
 
