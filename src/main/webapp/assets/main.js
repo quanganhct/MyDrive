@@ -6,7 +6,35 @@ $(function() {
 				getFolderJson:"/folder/get",
 				saveFolderJson:"/folder/save"
 			}};
+			/*
+getFolderJson Format : JSON (Juste convertir le text en json et le returner)
+{ folder: 
+	[   { id: 0, name: null, parent: null, files: [Object] },
+		{ id: 1, name: 'test', parent: 0, files: [] },
+		{ id: 2, name: 'test2', parent: 1, files: [] },
+		{ id: 3, name: 'test3', parent: 0, files: [] } 
+	] 
+}
 
+ FilesInfo Format : JSON
+{ data: 
+ [ { files_url: 'http://google.drive/b1710232d20266c8efe0a50270c15f50',
+	    files_range: '0',
+	    files_size: '10000000' },
+	 { files_url: 'http://google.drive/c7809b28dbdd46010611ac49963bdd43',
+	    files_range: '100000000',
+	    files_size: '10000000' },
+	 { files_url: 'http://google.drive/fa011d985748a1dbb4c955a10eade923',
+	    files_range: '200000000',
+	    files_size: '10000000' },
+	 { files_url: 'http://google.drive/a66a7b7c42ad56b75b2b95c10341558e',
+	    files_range: '300000000',
+	   	files_size: '10000000' }
+  ] 
+}
+
+
+			*/
 
 
 				remote.getAllFiles = function(files_token,callback){
