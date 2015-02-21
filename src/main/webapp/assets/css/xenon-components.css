@@ -4307,7 +4307,7 @@ button.toast-close-button {
   line-height: 1.4;
 }
 .xe-widget.xe-vertical-counter .xe-label {
-  padding-top: 15px;
+  
   text-align: center;
 }
 .xe-widget.xe-vertical-counter .xe-label .num {
@@ -5739,4 +5739,12 @@ button.toast-close-button {
     width: 100%;
     display: block;
   }
+}
+
+
+
+
+
+.xe-data-files {
+  display:none;
 }
