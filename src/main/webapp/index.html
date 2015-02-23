@@ -19,8 +19,17 @@
 	<link rel="stylesheet" href="assets/css/xenon-components.css">
 	<link rel="stylesheet" href="assets/css/xenon-skins.css">
 	<link rel="stylesheet" href="assets/css/custom.css">
+	<link rel="stylesheet" href="assets/fileupload/jquery.fileupload.css">
+	
+	<link href="assets/css/jquery-ui.css" rel="stylesheet" type="text/css">
+	<style type="text/css">
+	.ui-menu {
+			width: 100px;
+			font-size: 63%;
+			z-index: 60; /* over ext-wide titles */
+		}
+	</style>
 
-	<script src="assets/js/jquery-1.11.1.min.js"></script>
 
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
@@ -75,31 +84,11 @@
 			<div class="navbar-mobile-clear"></div>
 			
 			
-			
-			<!-- main menu -->
-					
-			<ul class="navbar-nav">
-				<li>
-					<a href="index.html">
-						<i class="linecons-cog"></i>
-						<span class="title">Home</span>
-					</a>
-				</li>
-			</ul>
-					
-			
 			<!-- notifications and other links -->
 			<ul class="nav nav-userinfo navbar-right">
 				
 				<li class="search-form"><!-- You can add "always-visible" to show make the search input visible -->
 			
-					<form method="get" action="extra-search.html">
-						<input type="text" name="s" class="form-control search-field" placeholder="Type to search..." />
-						
-						<button type="submit" class="btn btn-link">
-							<i class="linecons-search"></i>
-						</button>
-					</form>
 					
 				</li>
 		
@@ -107,7 +96,7 @@
 					<a href="#" data-toggle="dropdown">
 						<img src="assets/images/user-1.png" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
 						<span>
-							Arlind Nushi
+							Nom Prenom
 							<i class="fa-angle-down"></i>
 						</span>
 					</a>
@@ -143,169 +132,84 @@
 
 MAIN CONTENT
 
--->
+-->	
+
 	<div class="page-container"><!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
 			
 		<div class="main-content">
-			
-			<section class="gallery-env">
-			
-				<div class="row">
-				
-					<!-- Gallery Album Optipns and Images -->
-					<div class="col-sm-9 gallery-right">
-						
-						<!-- Album Header -->
-						<div class="album-header">
-							<h2>General</h2>
-							
-							<ul class="album-options list-unstyled list-inline">
-								<li>
-									<input type="checkbox" class="cbr" id="select-all" />
-									<label for="select-all">Select all</label>
-								</li>
-								<li>
-									<a href="#" data-action="trash">
-										<i class="fa-trash"></i>
-										Trash
-									</a>
-								</li>
-							</ul>
-						</div>
-						
-						<!-- Sorting Information -->
-						<div class="album-sorting-info">
-							<div class="album-sorting-info-inner clearfix">
-								<a href="#" class="btn btn-secondary btn-xs btn-single btn-icon btn-icon-standalone pull-right" data-action="sort">
-									<i class="fa-save"></i>
-									<span>Save Current Order</span>
-								</a>
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="panel panel-default">
+						<div class="panel-heading"> Espace de stockage utilisé: <span id="sizeUsed">300 mo </span>/ 10 Go</div>
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-md-12">
 								
-								<i class="fa-arrows-alt"></i>
-								Drag images to sort them
-							</div>
-						</div>
-						
-						<!-- Album Images -->
-						<div class="album-images row">
+									<div class="progress progress-striped active">
+										<div id="barSizeUsed" class="progress-bar progress-bar-red" role="progressbar" 
+												aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" style="width: 75%">
+										</div>
+									</div>
 							
-							<!-- Album Image -->
-							<div class="col-md-3 col-sm-4 col-xs-6">
-								<div class="album-image">
-									<a href="#" class="thumb" data-action="edit">
-										<img src="assets/images/album-img-1.png" class="img-responsive" />
-									</a>
-									
-									<a href="#" class="name">
-										<span>IMG_007.jpg</span>
-										<em>10 October 2014</em>
-									</a>
-									
-									<div class="image-options">
-										<a href="#" data-action="edit"><i class="fa-pencil"></i></a>
-										<a href="#" data-action="trash"><i class="fa-trash"></i></a>
-									</div>
-									
-									<div class="image-checkbox">
-										<input type="checkbox" class="cbr" />
-									</div>
 								</div>
 							</div>
-
-							<!-- Album Image -->
-							<div class="col-md-3 col-sm-4 col-xs-6">
-								<div class="album-image">
-									<a href="#" class="thumb" data-action="edit">
-										<div class="img-responsive" style="height:122px; background-color:#FFBA00;"></div>
-									</a>
-									<a href="#" class="name">
-										<span>Folder: Hello</span>
-										<em>10 October 2014</em>
-									</a>
-									
-									<div class="image-options">
-										<a href="#" data-action="edit"><i class="fa-pencil"></i></a>
-										<a href="#" data-action="trash"><i class="fa-trash"></i></a>
-									</div>
-									
-									<div class="image-checkbox">
-										<input type="checkbox" class="cbr" />
-									</div>
-								</div>
-							</div>
-							
-							
 						</div>
-						
-						
-						<button class="btn btn-white btn-block">
-							<i class="fa-bars"></i>
-							Load More Files
-						</button>
-						
 					</div>
-					
-					<!-- Gallery Sidebar -->
-					<div class="col-sm-3 gallery-left">
-						
-						<div class="gallery-sidebar">			
+				</div>
+			</div>
+			<section class="gallery-env">
 							
-							<a href="#" class="btn btn-block btn-secondary btn-icon btn-icon-standalone btn-icon-standalone-right">
-								<i class="linecons-photo"></i>
-								<span>Create Folder</span>
-							</a>
-							
-							<ul class="ulFolder list-unstyled">
-								<li class="active">
-									<a href="#">
-										<i class="fa-folder-open-o"></i>
-										<span>General</span>
-									</a>
-									<ul class="ulFolderKid">
-										<li>
-											<a href="#">
-												<i class="fa-folder-o"></i>
-												<span>Hello</span>
-											</a>
-										</li>
-									</ul>
-								</li>
-							<!--
-								<li>
-									<a href="#">
-										<i class="fa-folder-o"></i>
-										<span>Office</span>
-									</a>
-								</li>
-								<li>
-									<a href="#">
-										<i class="fa-folder-o"></i>
-										<span>Las Vegas</span>
-									</a>
-								</li>
-								<li>
-									<a href="#">
-										<i class="fa-folder-o"></i>
-										<span>Thailand</span>
-									</a>
-								</li>
-								<li>
-									<a href="#">
-										<i class="fa-folder-o"></i>
-										<span>Nature</span>
-									</a>
-								</li>
-							-->
-							</ul>
-							
-						</div>
-						
+				<div class="row">
+
+					<!-- Gallery Album Optipns and Images -->
+					<div class="col-sm-12 gallery-right">
+
+						<!-- The fileinput-button span is used to style the file input field as button -->
+					    <form id="fileupload" action="#" method="POST" enctype="multipart/form-data">
+					        <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+					        <div class="row fileupload-buttonbar">
+					            <div class="col-lg-7">
+					                <!-- The fileinput-button span is used to style the file input field as button -->
+					                <span class="btn btn-success fileinput-button">
+					                    <i class="glyphicon glyphicon-plus"></i>
+					                    <span>Ajout de Fichier ...</span>
+					                    <input type="file" name="files[]" multiple>
+					                </span>
+					                <button type="button" class="btn btn-warning folderCreate" onclick="$('#modal-folder').modal('show', {backdrop: 'static'});">
+					                    <i class="glyphicon glyphicon-trash"></i>
+					                    <span>Ajout d'un dossier</span>
+					                </button>
+					               <!-- <button type="button" class="btn btn-danger supprimer">
+						                    <i class="glyphicon glyphicon-trash"></i>
+						                    <span>Suprimer</span>
+						                </button>
+						            -->
+					                <!-- The global file processing state -->
+					                <span class="fileupload-process"></span>
+					            </div>
+					            <!-- The global progress state -->
+					            <div class="col-lg-5 fileupload-progress fade">
+					                <!-- The global progress bar -->
+					                <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+					                    <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+					                </div>
+					                <!-- The extended global progress state -->
+					                <div class="progress-extended">&nbsp;</div>
+					            </div>
+					        </div>
+					        <!-- The table listing the files available for upload/download -->
+
+							<div class="row files" >
+
+							</div>
+					        
+					    </form>
 					</div>
 				
 				</div>
 				
 			</section>
-
+			<a style="display:none;" href="" id='hiddenDownload'></a>
 
 		</div>
 		
@@ -317,21 +221,175 @@ END MAIN CONTENT
 
 -->	
 	
+
+<div class="modal fade" id="modal-folder" data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				
+				<div class="modal-header">
+					<h4 class="modal-title">Information</h4>
+				</div>
+				
+				<div class="modal-body">
+				
+					<label class="col-sm-2 control-label" for="field-1">Nom du folder</label>
+					<div class="col-sm-10">
+						<input id="folder-name" class="form-control" type="text" placeholder="Nom">
+					</div>
+					
+				</div>
+				
+				<div class="modal-footer">
+					<button type="button" class="btn btn-info closeCreateFolder">Continue</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
 	
+	
+<!-- The template to display files available for upload -->
+<script id="template-upload" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+   <div class="col-sm-3 template-upload fade ">
+	<div class="xe-widget xe-vertical-counter xe-vertical-counter-white">
 
+		<div class="xe-icon">
+			<i class="linecons-doc"></i>
+		</div>
+		
+		<div class="xe-label">
+			<p class="size">Processing...</p>
+            <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            	<div class="progress-bar progress-bar-success" style="width:0%;"></div>
+            </div>
+            <p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.name%}</p>
+            <strong class="error text-danger"></strong>
+		</div>
+	</div>	
+	<div class="xe-data-files" data-id="{%=file.token%}" data-name="{%=file.name%}"></div>
+</div>
+{% } %}
+</script>
+<!-- The template to display files available for download -->
+<script id="template-download" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+<div class="col-sm-3 template-download fade ">
+	<div class="xe-widget xe-action xe-vertical-counter xe-vertical-counter-white xe-file">
 
+		<div class="xe-icon">
+			<i class="linecons-doc"></i>
+		</div>
+		
+		<div class="xe-label">
+			{% if (file.origin == null) { %}
+			<a href="{%=file.token%}" data-token="{%=file.token%}" data-name="{%=file.name%}" class="btn btn-secondary downloadFile">Download</a>
+			<p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.name%}</p>
+			{% } else { %}
+			<a href="{%=file.token%}" data-token="{%=file.token%}" data-name="{%=file.origin%}" class="btn btn-secondary downloadFile">Download</a>
+			<p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.origin%}</p>
+			{% } %}
+		</div>
+	</div>	
+	
+</div>
+{% } %}
+</script>
+<script id="template-file" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+<div class="col-sm-3 template-download fade in">
+	<div class="xe-widget xe-action xe-vertical-counter xe-vertical-counter-white xe-file">
 
-	<!-- Bottom Scripts -->
-	<script src="assets/js/bootstrap.min.js"></script>
-	<script src="assets/js/TweenMax.min.js"></script>
-	<script src="assets/js/resizeable.js"></script>
-	<script src="assets/js/joinable.js"></script>
-	<script src="assets/js/xenon-api.js"></script>
-	<script src="assets/js/xenon-toggles.js"></script>
+		<div class="xe-icon">
+			<i class="linecons-doc"></i>
+		</div>
+		
+		<div class="xe-label">
+			
+			{% if (file.origin == null) { %}
+			<a href="{%=file.token%}" data-token="{%=file.token%}" data-name="{%=file.name%}" class="btn btn-secondary downloadFile">Download</a>
+			<p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.name%}</p>
+			{% } else { %}
+			<a href="{%=file.token%}" data-token="{%=file.token%}" data-name="{%=file.origin%}" class="btn btn-secondary downloadFile">Download</a>
+			<p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.origin%}</p>
+			{% } %}
+		</div>
+	</div>	
+	
+</div>
+{% } %}
+</script>
+<script id="template-folder" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+<div class="col-sm-3 fade in">
+	<div class="xe-widget xe-action xe-vertical-counter xe-vertical-counter-warning xe-folder" data-key="{%=file.id%}">
 
+		<div class="xe-icon">
+			<i class="linecons-wallet"></i>
+		</div>
+		
+		<div class="xe-label">
+			<p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.name%}</p>
+		</div>
+	</div>	
+	
+</div>
+{% } %}
+</script>
+<script id="template-main" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+<div class="col-sm-3  fade in">
+	<div class="xe-widget xe-vertical-counter xe-vertical-counter-purple xe-main" data-key="{%=file.id%}">
 
-	<!-- JavaScripts initializations and stuff -->
-	<script src="assets/js/xenon-custom.js"></script>
+		<div class="xe-icon">
+			<i class="linecons-wallet"></i>
+		</div>
+		
+		<div class="xe-label">
+			<p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.name%}</p>
+		</div>
+	</div>	
+	
+</div>
+{% } %}
+</script>
+<script src="assets/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="assets/js/jquery-ui.min.js"></script>
+<!-- Bottom Scripts -->
+<script src="assets/js/bootstrap.min.js"></script>
+<script src="assets/js/TweenMax.min.js"></script>
+<script src="assets/js/resizeable.js"></script>
+<script src="assets/js/joinable.js"></script>
+<script src="assets/js/xenon-api.js"></script>
+<script src="assets/js/xenon-toggles.js"></script>
+<script src="assets/js/fso.min.js"></script>
+
+<script type="text/javascript" src="assets/fancytree/jquery.fancytree.js"></script>
+<script type="text/javascript" src="assets/fancytree/jquery.fancytree.dnd.js"></script>
+<script type="text/javascript" src="assets/fancytree/jquery.fancytree.edit.js"></script>
+<script type="text/javascript" src="assets/js/jquery.ui-contextmenu.js"></script>
+<!-- JavaScripts initializations and stuff -->
+<script src="assets/js/xenon-custom.js"></script>
+<!-- The Templates plugin is included to render the upload/download listings -->
+<script src="assets/js/tmpl.min.js"></script>
+<script src="assets/js/load-image.all.min.js"></script>
+<!-- <script src="assets/js/canvas-to-blob.min.js"></script> -->
+<script src="assets/fileupload/jquery.iframe-transport.js"></script>
+<script src="assets/fileupload/jquery.fileupload.js"></script>
+<script src="assets/fileupload/jquery.fileupload-process.js"></script>
+<script src="assets/fileupload/jquery.fileupload-image.js"></script>
+<script src="assets/fileupload/jquery.fileupload-audio.js"></script>
+<script src="assets/fileupload/jquery.fileupload-video.js"></script>
+<script src="assets/fileupload/jquery.fileupload-validate.js"></script>
+<script src="assets/fileupload/jquery.fileupload-ui.js"></script>
+
+<script src="assets/js/md5.min.js"></script>
+<script src="assets/js/fileDownload.js"></script>
+<script type="text/javascript" src="assets/js/moment.min.js"></script>
+<script src="assets/js/FileSaver.js"></script>
+<script src="assets/main.js"></script>
 
 </body>
 </html>
