@@ -20,7 +20,7 @@ import com.google.gson.JsonObject;
 
 @Entity
 @Table(name = "mychunk")
-public class MyChunk implements Serializable{
+public class MyChunk implements Serializable, MyObject{
 
 	private Integer Id;
 
@@ -29,6 +29,8 @@ public class MyChunk implements Serializable{
 	private Long files_range;
 
 	private Long files_size;
+	
+	private String chunkUrl;
 
 	public MyChunk() {
 
@@ -64,7 +66,7 @@ public class MyChunk implements Serializable{
 
 	public JsonObject toJsonObject() {
 		JsonObject jo = new JsonObject();
-		jo.addProperty("files_url", this.myFile.getFile_uuid());
+		jo.addProperty("files_url", this.getChunkUrl());
 		jo.addProperty("files_range", this.files_range);
 		jo.addProperty("files_size", this.files_size);
 		return jo;
@@ -78,5 +80,14 @@ public class MyChunk implements Serializable{
 
 	public void setId(Integer id) {
 		Id = id;
+	}
+
+	@Column(name = "chunkUrl")
+	public String getChunkUrl() {
+		return chunkUrl;
+	}
+
+	public void setChunkUrl(String chunkUrl) {
+		this.chunkUrl = chunkUrl;
 	}
 }

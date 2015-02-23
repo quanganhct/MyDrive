@@ -16,16 +16,23 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "myuser")
-public class User implements Serializable {
+public class User implements Serializable, MyObject {
 	private String user_uuid;
 
 	private String username;
 
-	private List<MyFolder> listFolders = new ArrayList<MyFolder>();
+//	private List<MyFolder> listFolders = new ArrayList<MyFolder>();
+	
+	private MyFolder myFolder;
+	
+	private List<MyGoogleAccount> listGoogleAccount = new ArrayList<MyGoogleAccount>();
+	
+	private List<MyFile> listAllFile = new ArrayList<MyFile>();
 
 	@Id
 	@Column(name = "user_uuid")
@@ -45,13 +52,40 @@ public class User implements Serializable {
 	public void setUsername(String username) {
 		this.username = username;
 	}
+//
+//	@OneToMany(fetch = FetchType.LAZY, mappedBy = "myUser", cascade = CascadeType.ALL)
+//	public List<MyFolder> getListFolders() {
+//		return listFolders;
+//	}
+//
+//	public void setListFolders(List<MyFolder> listFolders) {
+//		this.listFolders = listFolders;
+//	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "myUser", cascade = CascadeType.ALL)
-	public List<MyFolder> getListFolders() {
-		return listFolders;
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "myUser")
+	public List<MyGoogleAccount> getListGoogleAccount() {
+		return listGoogleAccount;
 	}
 
-	public void setListFolders(List<MyFolder> listFolders) {
-		this.listFolders = listFolders;
+	public void setListGoogleAccount(List<MyGoogleAccount> listGoogleAccount) {
+		this.listGoogleAccount = listGoogleAccount;
+	}
+
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "myUser")
+	public MyFolder getMyFolder() {
+		return myFolder;
+	}
+
+	public void setMyFolder(MyFolder myFolder) {
+		this.myFolder = myFolder;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "myUser")
+	public List<MyFile> getListAllFile() {
+		return listAllFile;
+	}
+
+	public void setListAllFile(List<MyFile> listAllFile) {
+		this.listAllFile = listAllFile;
 	}
 }

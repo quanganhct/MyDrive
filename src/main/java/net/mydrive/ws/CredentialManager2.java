@@ -1,13 +1,10 @@
 package net.mydrive.ws;
 
-/**
- * @author nguyenquanganh
- */
-
 import java.io.IOException;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
+import net.mydrive.service.GoogleCredentialOfflineStore;
 import net.mydrive.service.MyCredentialStore;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -19,7 +16,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 
-public class CredentialManager {
+public class CredentialManager2 {
 	private GoogleClientSecrets clientSecret;
 	private HttpTransport transport;
 	private JsonFactory jsonFactory;
@@ -29,7 +26,7 @@ public class CredentialManager {
 			"https://www.googleapis.com/auth/userinfo.email",
 			"https://www.googleapis.com/auth/userinfo.profile");
 
-	public CredentialManager(GoogleClientSecrets clientSecret,
+	public CredentialManager2(GoogleClientSecrets clientSecret,
 			HttpTransport transport, JsonFactory jFactory) {
 		this.clientSecret = clientSecret;
 		this.transport = transport;
@@ -44,20 +41,23 @@ public class CredentialManager {
 		return c;
 	}
 
-	public Credential get(String userId) {
+	public Credential get(String userId, String googleAcc) {
 		Credential c = buildEmpty();
-		if (MyCredentialStore.getInstante().getUserCredential(userId, c)) {
+		if (GoogleCredentialOfflineStore.getGoogleCredentialOffline()
+				.getUserCredential(userId, googleAcc, c)) {
 			return c;
 		}
 		return null;
 	}
 
-	public void save(String userId, Credential c) {
-		MyCredentialStore.getInstante().saveUserCredential(userId, c);
+	public void save(String userId, String googleAcc, Credential c) {
+		GoogleCredentialOfflineStore.getGoogleCredentialOffline()
+				.saveUserCredential(userId, googleAcc, c);
 	}
 
 	public void delete(String userId) {
-		MyCredentialStore.getInstante().deleteUserCredential(userId);
+		GoogleCredentialOfflineStore.getGoogleCredentialOffline()
+				.deleteUserCredential(userId);
 	}
 
 	public String getAuthorizationUrl() {
@@ -68,24 +68,27 @@ public class CredentialManager {
 		return url.build();
 	}
 
-	public Credential retrieve(String code) {
+	public Credential getCredentialWithRefreshToken(String userId,
+			String googleAcc) throws Exception {
+		String refreshToken = GoogleCredentialOfflineStore
+				.getGoogleCredentialOffline()
+				.getRefreshToken(userId, googleAcc);
+
+		if (refreshToken == null)
+			throw new Exception("Refresh token null");
+
+		GoogleCredential.Builder builder = new GoogleCredential.Builder()
+				.setTransport(transport).setJsonFactory(jsonFactory)
+				.setClientSecrets(clientSecret);
+		builder.addRefreshListener(new MyCredentialRefreshListener());
+		Credential c = builder.build();
+		c.setRefreshToken(refreshToken);
 		try {
-			GoogleTokenResponse response = new GoogleAuthorizationCodeTokenRequest(
-					transport, jsonFactory,
-					clientSecret.getWeb().getClientId(), clientSecret.getWeb()
-							.getClientSecret(), code, clientSecret.getWeb()
-							.getRedirectUris().get(0)).execute();
-
-			return buildEmpty()
-					.setAccessToken(response.getAccessToken())
-					.setRefreshToken(response.getRefreshToken())
-					.setExpirationTimeMilliseconds(
-							response.getExpiresInSeconds() * 1000);
+			c.refreshToken();
+			return c;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Cant get access token " + e);
+			return null;
 		}
-
-		return null;
 	}
 }

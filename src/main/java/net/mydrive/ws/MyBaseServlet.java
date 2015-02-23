@@ -1,5 +1,11 @@
 package net.mydrive.ws;
 
+/**
+ * 
+ * @author nguyenquanganh
+ * 
+ */
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -15,6 +21,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
+import com.google.api.services.drive.Drive;
 import com.google.api.services.oauth2.Oauth2;
 import com.google.api.services.oauth2.model.Userinfoplus;
 import com.google.gson.Gson;
@@ -28,12 +35,16 @@ public abstract class MyBaseServlet extends HttpServlet {
 	public static final String CLIENT_SECRETS_FILE_PATH = "/WEB-INF/client_secrets.json";
 
 	private CredentialManager credentialManager = null;
+	protected CredentialManager2 credentialManager2 = null;
 
 	@Override
 	public void init() throws ServletException {
 		super.init();
 		credentialManager = new CredentialManager(getClientSecret(), TRANSPORT,
 				JSON_FACTORY);
+
+		credentialManager2 = new CredentialManager2(getClientSecret(),
+				TRANSPORT, JSON_FACTORY);
 	}
 
 	private GoogleClientSecrets getClientSecret() {
@@ -93,21 +104,24 @@ public abstract class MyBaseServlet extends HttpServlet {
 		if (code != null) {
 			Credential c = credentialManager.retrieve(code);
 			Oauth2 service = getOauth2Service(c);
-			
-			
+
 			try {
 				Userinfoplus inf = service.userinfo().get().execute();
 				String id = inf.getId();
 				credentialManager.save(id, c);
 				req.getSession().setAttribute(KEY_SESSION_USERID, id);
-                                resp.sendRedirect("/index");
+				resp.sendRedirect("/index");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-                            
+
 				throw new RuntimeException("Cant handle Oauth2 call back");
 			}
-		}else{
-                    resp.sendRedirect("/login");
-                }
+		} else {
+			resp.sendRedirect("/login");
+		}
+	}
+
+	protected Drive getDriveService(Credential credential) {
+		return new Drive.Builder(TRANSPORT, JSON_FACTORY, credential).build();
 	}
 }

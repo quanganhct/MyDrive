@@ -1,5 +1,13 @@
 package net.mydrive.util;
 
+import java.util.List;
+
+import net.mydrive.entities.MyFile;
+import net.mydrive.entities.MyObject;
+import net.mydrive.entities.User;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
@@ -15,26 +23,69 @@ public class MyUtil {
 	private static SessionFactory sessionFactory = buildSessionFactory();
 	private static ServiceRegistry serviceRegistry;
 
-	
 	private static SessionFactory buildSessionFactory() {
 		try {
 			Configuration configuration = new Configuration();
-		    configuration.configure();
-		    serviceRegistry = new ServiceRegistryBuilder().applySettings(
-		            configuration.getProperties()).buildServiceRegistry();
-		    sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-		    return sessionFactory;
-		}catch (Exception e){
+			configuration.configure();
+			serviceRegistry = new ServiceRegistryBuilder().applySettings(
+					configuration.getProperties()).buildServiceRegistry();
+			sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+			return sessionFactory;
+		} catch (Exception e) {
 			System.err.println("Initial SessionFactory creation failed." + e);
-            throw new ExceptionInInitializerError(e);
+			throw new ExceptionInInitializerError(e);
 		}
 	}
-	
+
 	public static SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
-	
+
 	public static void shutdown() {
 		getSessionFactory().close();
+	}
+
+	public static boolean saveEntity(MyObject o) {
+		try {
+			Session s = getSessionFactory().openSession();
+			s.beginTransaction();
+			s.saveOrUpdate(o);
+			s.getTransaction().commit();
+			s.close();
+
+			return true;
+		} catch (Exception e) {
+			System.err.println("Cannot save Object : " + e);
+			return false;
+		}
+	}
+
+	public static User getUserFromUsername(String username) {
+		Session s = getSessionFactory().openSession();
+		Query q = s.createQuery("from User where username = :username");
+		q.setParameter("username", username);
+		List result = q.list();
+		if (result.size() == 0)
+			return null;
+		User u = (User) result.get(0);
+		u.getListGoogleAccount().size();
+		u.getListAllFile().size();
+		s.close();
+
+		return u;
+	}
+
+	public static MyFile getFileFromFileUuid(String uuid) {
+		Session s = getSessionFactory().openSession();
+		Query q = s.createQuery("from MyFile where file_uuid = :uuid");
+		q.setParameter("uuid", uuid);
+		List result = q.list();
+		if (result.size() == 0)
+			return null;
+		MyFile f = (MyFile) result.get(0);
+		f.getList_chunk().size();
+		s.close();
+		
+		return f;
 	}
 }

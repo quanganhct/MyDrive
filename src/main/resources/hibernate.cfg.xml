@@ -33,6 +33,6 @@
     <mapping class="net.mydrive.entities.MyFolder"/>
     <mapping class="net.mydrive.entities.MyFile"/>
     <mapping class="net.mydrive.entities.MyChunk"/>
-
+    <mapping class="net.mydrive.entities.MyGoogleAccount"/>
   </session-factory>
 </hibernate-configuration>

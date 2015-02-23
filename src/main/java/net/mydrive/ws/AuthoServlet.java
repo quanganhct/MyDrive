@@ -29,10 +29,6 @@ public class AuthoServlet extends MyBaseServlet {
                throws ServletException, IOException {
               // System.out.println("1 "+request.getRequestURI());
 
-               
-
-              
-
                System.out.println("Autho-Servlet: "+request.getRequestURI());
 
 

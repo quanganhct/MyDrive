@@ -1,5 +1,6 @@
 package net.mydrive.entities;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 /**
@@ -21,11 +24,11 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "myfolder")
-public class MyFolder {
+public class MyFolder implements Serializable, MyObject{
 
 	private String folder_uuid;
 	
-	private String folder_url;
+	private String foldersJSON;
 
 	private List<MyFile> listFiles = new ArrayList<MyFile>();
 	
@@ -41,32 +44,33 @@ public class MyFolder {
 		this.folder_uuid = folder_uuid;
 	}
 
-	@Column(name = "folder_url")
-	public String getFolder_url() {
-		return folder_url;
-	}
 
-	public void setFolder_url(String folder_url) {
-		this.folder_url = folder_url;
-	}
+//	@OneToMany(fetch = FetchType.LAZY, mappedBy = "myFolder", cascade = CascadeType.ALL)
+//	public List<MyFile> getListFiles() {
+//		return listFiles;
+//	}
+//
+//	public void setListFiles(List<MyFile> listFiles) {
+//		this.listFiles = listFiles;
+//	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "myFolder", cascade = CascadeType.ALL)
-	public List<MyFile> getListFiles() {
-		return listFiles;
-	}
-
-	public void setListFiles(List<MyFile> listFiles) {
-		this.listFiles = listFiles;
-	}
-
-	@ManyToOne
-	@JoinColumn(name = "user_uuid")
+	@OneToOne(fetch = FetchType.EAGER)
+	@PrimaryKeyJoinColumn
 	public User getMyUser() {
 		return myUser;
 	}
 
 	public void setMyUser(User myUser) {
 		this.myUser = myUser;
+	}
+
+	@Column(name = "foldersJSON")
+	public String getFoldersJSON() {
+		return foldersJSON;
+	}
+
+	public void setFoldersJSON(String foldersJSON) {
+		this.foldersJSON = foldersJSON;
 	}
 
 }

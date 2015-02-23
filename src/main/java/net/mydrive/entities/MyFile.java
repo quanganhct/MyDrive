@@ -25,7 +25,7 @@ import com.google.gson.JsonObject;
 
 @Entity
 @Table(name = "myfile")
-public class MyFile implements Serializable {
+public class MyFile implements Serializable, MyObject {
 
 	private String file_uuid;
 
@@ -38,6 +38,8 @@ public class MyFile implements Serializable {
 	private Date modified;
 
 	private MyFolder myFolder;
+	
+	private User myUser;
 
 	@Id
 	@Column(name = "file_uuid")
@@ -88,17 +90,32 @@ public class MyFile implements Serializable {
 	public JsonObject toJsonObject() {
 		JsonObject jo = new JsonObject();
 		jo.addProperty("name", this.file_name);
-
+		jo.addProperty("size", this.file_size);
+		jo.addProperty("modified", this.modified.toString());
+		jo.addProperty("deleteType", "DELETE");
+		jo.addProperty("token", this.file_uuid);
+		jo.addProperty("deleteUrl", "http://test.com:5000/delete/files/" + this.file_uuid);
+		
 		return jo;
 	}
+//
+//	@ManyToOne
+//	@JoinColumn(name = "folder_uuid")
+//	public MyFolder getMyFolder() {
+//		return myFolder;
+//	}
+//
+//	public void setMyFolder(MyFolder myFolder) {
+//		this.myFolder = myFolder;
+//	}
 
 	@ManyToOne
-	@JoinColumn(name = "folder_uuid")
-	public MyFolder getMyFolder() {
-		return myFolder;
+	@JoinColumn(name = "user_uuid")
+	public User getMyUser() {
+		return myUser;
 	}
 
-	public void setMyFolder(MyFolder myFolder) {
-		this.myFolder = myFolder;
+	public void setMyUser(User myUser) {
+		this.myUser = myUser;
 	}
 }
