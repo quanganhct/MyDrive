@@ -14,6 +14,7 @@ package net.mydrive.ws;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,6 +51,25 @@ public class RestCall extends MyBaseServlet {
 
 	@Context
 	private HttpServletResponse response;
+	
+	@POST
+	@Path("/signup")
+	public boolean signUp() throws Exception {
+		String username = (String) request.getAttribute("username");
+		String pwd = (String) request.getAttribute("password");
+		
+		User u = MyUtil.getUserFromUsername(username);
+		if (u != null){
+			throw new Exception("User exist ");
+		}
+		
+		u = new User();
+		u.setUsername(username);
+		u.setPwdEncode(pwd);
+		u.setUser_uuid(UUID.randomUUID().toString());
+		MyUtil.saveEntity(u);
+		return true;
+	}
 
 	@POST
 	@Path("/upload/{uuid}")
@@ -190,4 +210,9 @@ public class RestCall extends MyBaseServlet {
 		return u;
 	}
 
+	@GET
+	@Path("/test")
+	public String test() {
+		return "it work";
+	}
 }

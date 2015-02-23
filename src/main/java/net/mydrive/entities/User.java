@@ -26,6 +26,8 @@ public class User implements Serializable, MyObject {
 
 	private String username;
 
+	private String pwdEncode;
+	
 //	private List<MyFolder> listFolders = new ArrayList<MyFolder>();
 	
 	private MyFolder myFolder;
@@ -87,5 +89,14 @@ public class User implements Serializable, MyObject {
 
 	public void setListAllFile(List<MyFile> listAllFile) {
 		this.listAllFile = listAllFile;
+	}
+
+	@Column(name = "pwdEncode")
+	public String getPwdEncode() {
+		return pwdEncode;
+	}
+
+	public void setPwdEncode(String pwdEncode) {
+		this.pwdEncode = pwdEncode;
 	}
 }

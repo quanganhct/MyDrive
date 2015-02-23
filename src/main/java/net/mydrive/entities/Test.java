@@ -1,10 +1,10 @@
 package net.mydrive.entities;
 
-import java.util.List;
+import java.util.Date;
+import java.util.UUID;
 
 import net.mydrive.util.MyUtil;
 
-import org.hibernate.Query;
 import org.hibernate.Session;
 
 public class Test {
@@ -47,6 +47,6 @@ public class Test {
 		
 		session.close();
 		MyUtil.getSessionFactory().close();
-
+		System.out.println(UUID.randomUUID().toString());
 	}
 }
