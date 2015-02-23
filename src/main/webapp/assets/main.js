@@ -4,7 +4,9 @@ $(function() {
 				loadUrl:"/uploaded/files/",
 				uploadUrl:"/upload?uuid=",
 				getFolderJson:"/folder/get",
-				saveFolderJson:"/folder/save"
+				saveFolderJson:"/folder/save",
+				deleteUrl:"/files/delete",
+				space:"/upload/size"
 			}};
 			/*
 getFolderJson Format : JSON (Juste convertir le text en json et le returner)
@@ -43,17 +45,17 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 			*/
 
 
-				remote.getAllFiles = function(files_token,callback){
+				remote.getAllFiles = function(files_token,name,token,callback){
 					$.get('allfiles',{files_token:files_token},function(result){
 
 
 							console.log(result);
-							 app.load(result.data,0,function(resultLoad){
-								
+							app.load(result.data,0,name,token,function(resultLoad){
+									//app.fso = new FSO(1024 * 1024 * 1024 * 10, true);
 									console.log(resultLoad);
-									var url = app.fso.toURL('test2.zip');
+									var url = app.fso.toURL(name);
 									$.fileDownload(url);
-									app.fso.createQueue().rm('test2.zip').execute();
+									//app.fso.createQueue().rm(token).execute();
 							});
 							
 							return callback(result);
@@ -99,6 +101,8 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 					});
 				}
 
+
+
 				/*
 				eventObject.checkIfSameAction = function(object,action){
 					if(action != eventObject.currentAction){
@@ -110,10 +114,16 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 				$('body').on('click','.downloadFile',function(e){
 					e.preventDefault();
 					eventObject.setEvent($(this),'download');
-					console.log($(this).attr('href'));		
-						
-					remote.getAllFiles($(this).attr('href'),function(e){
+						console.log($(this).attr('href'));		
 						console.log("object loaded");
+
+					var name = $(this).data("name");
+					var token = $(this).data("token");
+						console.log(name);
+
+					remote.getAllFiles($(this).attr('href'),name,token,function(e){
+
+
 					});
 				});
 
@@ -322,7 +332,11 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 					console.log("current");
 					console.log(current);
 					folder.getHigherId(function(e){
-						folder.structure.push({ id: e+1, name: name, parent: current.id, files: [] });
+						var object = { id: e+1, name: name, parent: current.id, files: [] };
+						folder.structure.push(object);
+							var render = tmpl("template-folder")({files:[object]});
+							$(".files").append(render);
+							//console.log(render);
 						folder.saveFolderJson(function(e){
 							return callback(true);
 						})
@@ -378,6 +392,145 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 
 					*/
 				}
+
+				folder.removeFileOfArray = function(files,token,callback){
+					var result = [];
+					for (var i = 0; i < files.length; i++) {
+						if(files[i].token != token){
+							result.push(files[i]);
+						}
+					};
+					console.log("RemoveFileOfArray");
+					callback(result);
+				}
+
+				folder.removeFile = function(token,callback){
+					var current = folder.getCurrent();
+					// To do again
+					
+						for (var j = 0; j < current.files.length; j++) {
+							console.log(current.files[j].token+" == "+token);
+							if(current.files[j].token == token){
+
+								folder.removeFileOfArray(current.files,token,function(e){
+									console.log("File removed");
+									current.files=e;
+								});
+							}
+							
+						}
+						
+			
+					return callback();
+				}
+
+				folder.removeFileByFolder = function(folder,callback){
+				
+						var listToken = [];
+						for (var j = 0; j < folder.files.length; j++) {
+							listToken.push(folder.files[j].token);
+
+							
+							
+						}
+						folder.files = [];
+			
+						return callback(listToken);
+						
+				}
+				folder.removeOneFolder = function(key,callback){
+					var result = [];
+					var structure = folder.structure;
+
+					for (var i = 0; i < structure.length; i++) {
+						if(key != structure[i].id){
+							result.push(structure[i]);
+						}
+					}
+			
+					return callback(result);
+				}
+
+				folder.getAllChildrenOfKey = function(key,callback){
+
+					arrayConcat = function(arr1,arr2){
+						for (var i = 0; i < arr2.length; i++) {
+							arr1.push(arr2[i]);
+						};
+						return arr1;
+					}
+
+					arrayOfToken = function(arr){
+						var result = [];
+						for (var i = 0; i < arr.length; i++) {
+							result.push(arr[i].token);
+						};
+						return result;
+					}
+
+					returnChildren = function(listFolder,resultFolder,resultFile,callback){
+						if(listFolder.length == 0)
+							return callback({resultFolder:resultFolder,resultFile:resultFile});
+						// Put the iD of the folder
+						resultFolder.push(listFolder[0].id);
+						resultFile = arrayConcat(resultFile,arrayOfToken(listFolder[0].files));
+						// Check the actual folder
+						folder.findChildren(listFolder[0].id,function(childrens){
+							listFolder = arrayConcat(listFolder,childrens)
+							listFolder.shift();
+							console.log("resultFolder size: "+resultFolder.length);
+							console.log("resultFile size: "+resultFile.length);
+							console.log({resultFolder:resultFolder,resultFile:resultFile});
+							returnChildren(listFolder,resultFolder,resultFile,callback);
+						})
+						
+
+					}
+
+					folder.findElementByKey(key,function(e){
+						returnChildren([e],[],[],function(f){
+							return callback(f);
+						});
+					});
+
+
+				}
+
+
+				folder.removeFolder = function(arr,callback){
+					
+					arrayOfId = function(arr){
+						var result = [];
+						for (var i = 0; i < arr.length; i++) {
+							result.push(arr[i].id);
+						};
+						return result;
+					}
+
+					arrContain = function(object,arr){
+						for (var i = 0; i < arr.length; i++) {
+							if(object == arr[i])
+								return true;
+						};
+						return false;
+					}
+
+					var structure = folder.structure;
+					var structureID = arrayOfId(folder.structure);
+					var result = [];
+
+					for (var i = 0; i < structure.length; i++) {
+						if(!arrContain(structure[i].id,arr)){
+							result.push(structure[i]);
+						}else{
+							console.log("One Folder Removed");
+						}
+					}
+					folder.structure = result;
+					return callback(result);
+
+					
+				}
 				
 				folder.init = function(){
 					//folder.findElementByKey("7");
@@ -387,8 +540,12 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 						folder.displayFolders(0);
 						folder.displayFiles(0);
 					});
+					app.getSpace();
 					
 				}
+
+
+
 
 
 
@@ -419,8 +576,6 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
        console.log(moment().format("x"));
        var time = moment().format("x");
        data.url = remote.options.uploadUrl+time;
-      
-       
 
 	});
 
@@ -436,7 +591,7 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 	   		};
 	   		console.log(folder.structure);
 	   		folder.saveFolderJson(function(e){
-	   			alert("Json Folder Saved");
+	   			//alert("Json Folder Saved");
 	   		})
 	});
 	
@@ -449,25 +604,64 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 
 
         $(".files").contextmenu({
-				delegate: ".xe-folder",
+				delegate: ".xe-action",
 				// menu: "#options",
 				menu: [
-					{title: "Cut", cmd: "cut", uiIcon: "ui-icon-scissors",action: function(event, ui){
+					/*{title: "Cut", cmd: "cut", uiIcon: "ui-icon-scissors",action: function(event, ui){
 							alert("Cut");
 						}
 					},
 					{title: "Copy", cmd: "copy", uiIcon: "ui-icon-copy"},
 					{title: "Paste", cmd: "paste", uiIcon: "ui-icon-clipboard", disabled: false },
 					{title: "----"},
-					{title: "Edit", cmd: "edit", uiIcon: "ui-icon-pencil", disabled: true },
-					{title: "Delete", cmd: "delete", uiIcon: "ui-icon-trash", disabled: true },
-					{title: "More", children: [
+					{title: "Edit", cmd: "edit", uiIcon: "ui-icon-pencil", disabled: true },*/
+					{title: "Delete", cmd: "delete", uiIcon: "ui-icon-trash",action: function(event,ui){
+							var target = ui.target.closest('.xe-widget');
+
+							if(target.hasClass('xe-folder')){
+								var key = target.data('key');
+								console.log("Key: "+key);
+								folder.getAllChildrenOfKey(key,function(e){
+									folder.removeFolder(e.resultFolder,function(){
+										folder.saveFolderJson(function(g){
+											if(e.resultFile.length != 0){
+												app.delete(e.resultFile,function(f){
+														target.parent().remove();
+														console.log("FOLDER REMOVED");
+												});
+											}else{
+												target.parent().remove();
+												console.log("FOLDER REMOVED");
+											}
+												
+										});
+									})
+								});
+
+							}else if(target.hasClass('xe-file')){
+								var token = target.parent().find('.downloadFile').data('token');
+								console.log(token);
+								folder.removeFile(token,function(e){
+									app.delete([token],function(f){
+										folder.saveFolderJson(function(e){
+											target.parent().remove();
+											console.log("Remove is a success");
+											console.log(folder.structure);
+										});
+									});
+									
+								})
+							}
+						} 
+					},
+					/*{title: "More", children: [
 					{title: "Sub 1", cmd: "sub1"},
 					{title: "Sub 2", cmd: "sub1"}
-					]}
+					]}*/
 				],
 				beforeOpen: function(event, ui) {
-					console.log("before open");
+					//console.log("before open");
+
 				},
 				select: function(event, ui) {
 					//var node = $.ui.fancytree.getNode(ui.target);
@@ -482,24 +676,37 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 			fso: null,
 			fsq:null,
 			data : [],
+			getSpace : function(){
+				$.get(remote.options.space,function(e){
+					$("#sizeUsed").html(e.message);
+					$("#barSizeUsed").css("width",e.size+"%");
+				})
+			},
 			cleanDrop : function(){
 				$('.files').html("");
 			},
-			delete : function(){
+			delete : function(token,callback){
+				$.get(remote.options.deleteUrl,{tokens:token},function(e){
+					return callback(e);
+				})
+				/*
 				$(".template-download .xe-vertical-counter-blue").each(function(index, el) {
 					if($(el).hasClass('xe-file')){
 						$(el).parent().find(".delete").trigger("click");
 						console.log("Click: "+index);
 					}
 				});
+				*/
+
+
 			},
-			load: function(data,num,callback){
+			load: function(data,num,name,token,callback){
 				console.log("LOAD: "+num);
 				if(data.length == 0){
 					callback(true);
 				}else{
 					var oReq = new XMLHttpRequest();
-					oReq.open("GET", "/uploaded/files/"+data[0].files_url, true);
+					oReq.open("GET", remote.options.loadUrl+data[0].files_url, true);
 					oReq.responseType = "arraybuffer";
 
 					oReq.onload = function(oEvent) {
@@ -515,28 +722,28 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 					  console.log(app.fsq);
 					  if(num == 0){
 					  	 app.fsq.write(
-							'test2.zip',
+							name,
 							oReq.response,
 							function() { console.log('wrote to file');
 						}).execute(function(){
 							console.log("execute :"+num);
 								var nextNum = num +1 ;
 								setTimeout(function(){
-									app.load(data,nextNum,callback);
+									app.load(data,nextNum,name,token,callback);
 								},500);
 								
 						});
 							
 					  }else{
 					  	 app.fsq.append(
-							'test2.zip',
+							name,
 							oReq.response,
 							function() { console.log('Append to file');
 						}).execute(function(){
 							console.log("execute :"+num);
 								var nextNum = num +1 ;
 								setTimeout(function(){
-									app.load(data,nextNum,callback);
+									app.load(data,nextNum,name,token,callback);
 								},500);
 						});
 					  }
@@ -550,12 +757,13 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 				}
 			},
 			run: function(){
-			//	app.fso = new FSO(1024 * 1024 * 1024 * 10, true);
+				app.fso = new FSO(1024 * 1024 * 1024 * 10, true);
+				//app.fso.createQueue().rm(token).execute();
 				console.log(listOfFiles);
 			}
 		}
 
-		//app.run();
+		app.run();
 		folder.init();
 
 

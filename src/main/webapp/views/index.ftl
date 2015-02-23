@@ -22,7 +22,6 @@
 	<link rel="stylesheet" href="assets/fileupload/jquery.fileupload.css">
 	
 	<link href="assets/css/jquery-ui.css" rel="stylesheet" type="text/css">
-	<link rel="stylesheet" href="assets/fancytree/skin-win7/ui.fancytree.css">
 	<style type="text/css">
 	.ui-menu {
 			width: 100px;
@@ -85,31 +84,11 @@
 			<div class="navbar-mobile-clear"></div>
 			
 			
-			
-			<!-- main menu -->
-					
-			<ul class="navbar-nav">
-				<li>
-					<a href="index.html">
-						<i class="linecons-cog"></i>
-						<span class="title">Home</span>
-					</a>
-				</li>
-			</ul>
-					
-			
 			<!-- notifications and other links -->
 			<ul class="nav nav-userinfo navbar-right">
 				
 				<li class="search-form"><!-- You can add "always-visible" to show make the search input visible -->
 			
-					<form method="get" action="extra-search.html">
-						<input type="text" name="s" class="form-control search-field" placeholder="Type to search..." />
-						
-						<button type="submit" class="btn btn-link">
-							<i class="linecons-search"></i>
-						</button>
-					</form>
 					
 				</li>
 		
@@ -117,7 +96,7 @@
 					<a href="#" data-toggle="dropdown">
 						<img src="assets/images/user-1.png" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
 						<span>
-							Arlind Nushi
+							Nom Prenom
 							<i class="fa-angle-down"></i>
 						</span>
 					</a>
@@ -154,17 +133,37 @@
 MAIN CONTENT
 
 -->	
-	
+
 	<div class="page-container"><!-- add class "sidebar-collapsed" to close sidebar by default, "chat-visible" to make chat appear always -->
 			
 		<div class="main-content">
-			
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="panel panel-default">
+						<div class="panel-heading"> Espace de stockage utilisé: <span id="sizeUsed">300 mo </span>/ 10 Go</div>
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-md-12">
+								
+									<div class="progress progress-striped active">
+										<div id="barSizeUsed" class="progress-bar progress-bar-red" role="progressbar" 
+												aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" style="width: 75%">
+										</div>
+									</div>
+							
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 			<section class="gallery-env">
-			
+							
 				<div class="row">
-				
+
 					<!-- Gallery Album Optipns and Images -->
 					<div class="col-sm-12 gallery-right">
+
 						<!-- The fileinput-button span is used to style the file input field as button -->
 					    <form id="fileupload" action="#" method="POST" enctype="multipart/form-data">
 					        <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
@@ -180,10 +179,11 @@ MAIN CONTENT
 					                    <i class="glyphicon glyphicon-trash"></i>
 					                    <span>Ajout d'un dossier</span>
 					                </button>
-					                <button type="button" class="btn btn-danger supprimer">
-					                    <i class="glyphicon glyphicon-trash"></i>
-					                    <span>Suprimer</span>
-					                </button>
+					               <!-- <button type="button" class="btn btn-danger supprimer">
+						                    <i class="glyphicon glyphicon-trash"></i>
+						                    <span>Suprimer</span>
+						                </button>
+						            -->
 					                <!-- The global file processing state -->
 					                <span class="fileupload-process"></span>
 					            </div>
@@ -277,31 +277,22 @@ END MAIN CONTENT
 <script id="template-download" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
 <div class="col-sm-3 template-download fade ">
-	<div class="xe-widget xe-vertical-counter xe-vertical-counter-white xe-file">
+	<div class="xe-widget xe-action xe-vertical-counter xe-vertical-counter-white xe-file">
 
 		<div class="xe-icon">
 			<i class="linecons-doc"></i>
 		</div>
 		
 		<div class="xe-label">
-			<a href="{%=file.token%}" class="btn btn-secondary">Download</a>
 			{% if (file.origin == null) { %}
+			<a href="{%=file.token%}" data-token="{%=file.token%}" data-name="{%=file.name%}" class="btn btn-secondary downloadFile">Download</a>
 			<p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.name%}</p>
 			{% } else { %}
+			<a href="{%=file.token%}" data-token="{%=file.token%}" data-name="{%=file.origin%}" class="btn btn-secondary downloadFile">Download</a>
 			<p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.origin%}</p>
 			{% } %}
 		</div>
 	</div>	
-
-	{% if (file.origin == null) { %}
-	<div class="xe-data-files" data-token="{%=file.token%}" data-name="{%=file.name%}">
-		<button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="delete/{%=file.token%}"></button>
-	</div>
-	{% } else { %}
-	<div class="xe-data-files" data-token="{%=file.token%}" data-name="{%=file.origin%}">
-		<button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="delete/{%=file.token%}"></button>
-	</div>
-	{% } %}
 	
 </div>
 {% } %}
@@ -309,31 +300,23 @@ END MAIN CONTENT
 <script id="template-file" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
 <div class="col-sm-3 template-download fade in">
-	<div class="xe-widget xe-vertical-counter xe-vertical-counter-white xe-file">
+	<div class="xe-widget xe-action xe-vertical-counter xe-vertical-counter-white xe-file">
 
 		<div class="xe-icon">
 			<i class="linecons-doc"></i>
 		</div>
 		
 		<div class="xe-label">
-			<a href="{%=file.token%}" class="btn btn-secondary">Download</a>
+			
 			{% if (file.origin == null) { %}
+			<a href="{%=file.token%}" data-token="{%=file.token%}" data-name="{%=file.name%}" class="btn btn-secondary downloadFile">Download</a>
 			<p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.name%}</p>
 			{% } else { %}
+			<a href="{%=file.token%}" data-token="{%=file.token%}" data-name="{%=file.origin%}" class="btn btn-secondary downloadFile">Download</a>
 			<p style="overflow:none; word-break: normal; word-spacing: 0; word-wrap: break-word;">{%=file.origin%}</p>
 			{% } %}
 		</div>
 	</div>	
-
-	{% if (file.origin == null) { %}
-	<div class="xe-data-files" data-token="{%=file.token%}" data-name="{%=file.name%}">
-		<button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="delete/{%=file.token%}"></button>
-	</div>
-	{% } else { %}
-	<div class="xe-data-files" data-token="{%=file.token%}" data-name="{%=file.origin%}">
-		<button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="delete/{%=file.token%}"></button>
-	</div>
-	{% } %}
 	
 </div>
 {% } %}
@@ -341,7 +324,7 @@ END MAIN CONTENT
 <script id="template-folder" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
 <div class="col-sm-3 fade in">
-	<div class="xe-widget xe-vertical-counter xe-vertical-counter-warning xe-folder" data-key="{%=file.id%}">
+	<div class="xe-widget xe-action xe-vertical-counter xe-vertical-counter-warning xe-folder" data-key="{%=file.id%}">
 
 		<div class="xe-icon">
 			<i class="linecons-wallet"></i>
