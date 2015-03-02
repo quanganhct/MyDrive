@@ -22,7 +22,7 @@ import com.google.gson.JsonObject;
 @Table(name = "mychunk")
 public class MyChunk implements Serializable, MyObject{
 
-	private Integer Id;
+	private String Id;
 
 	private MyFile myFile;
 
@@ -31,6 +31,8 @@ public class MyChunk implements Serializable, MyObject{
 	private Long files_size;
 	
 	private String chunkUrl;
+	
+	private MyGoogleAccount myGoogle;
 
 	public MyChunk() {
 
@@ -73,12 +75,11 @@ public class MyChunk implements Serializable, MyObject{
 	}
 
 	@Id
-	@GeneratedValue
-	public Integer getId() {
+	public String getId() {
 		return Id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(String id) {
 		Id = id;
 	}
 
@@ -89,5 +90,15 @@ public class MyChunk implements Serializable, MyObject{
 
 	public void setChunkUrl(String chunkUrl) {
 		this.chunkUrl = chunkUrl;
+	}
+
+	@ManyToOne
+	@JoinColumn(name = "account_name")
+	public MyGoogleAccount getMyGoogle() {
+		return myGoogle;
+	}
+
+	public void setMyGoogle(MyGoogleAccount myGoogle) {
+		this.myGoogle = myGoogle;
 	}
 }

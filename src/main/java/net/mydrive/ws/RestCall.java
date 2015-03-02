@@ -12,12 +12,14 @@ package net.mydrive.ws;
  */
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -27,8 +29,10 @@ import javax.ws.rs.core.Context;
 import net.mydrive.entities.MyChunk;
 import net.mydrive.entities.MyFile;
 import net.mydrive.entities.MyFolder;
+import net.mydrive.entities.MyGoogleAccount;
 import net.mydrive.entities.User;
 import net.mydrive.util.MyUtil;
+import net.mydrive.util.Pair;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -38,31 +42,31 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.gson.JsonArray;
 
 @Path("/command")
 public class RestCall extends MyBaseServlet {
+	private static final String KEY_SESSION_USERID = "user_id";
 
 	@Context
 	private HttpServletRequest request;
 
 	@Context
 	private HttpServletResponse response;
-	
+
 	@POST
 	@Path("/signup")
 	public boolean signUp() throws Exception {
 		String username = (String) request.getAttribute("username");
 		String pwd = (String) request.getAttribute("password");
-		
+
 		User u = MyUtil.getUserFromUsername(username);
-		if (u != null){
+		if (u != null) {
 			throw new Exception("User exist ");
 		}
-		
+
 		u = new User();
 		u.setUsername(username);
 		u.setPwdEncode(pwd);
@@ -101,12 +105,26 @@ public class RestCall extends MyBaseServlet {
 						File uploadChunk = new File();
 						java.io.File file = new java.io.File("./tempt");
 						fi.write(file);
-						Credential c = getGoogleCredential();
+
+						// get MyGoogleAccount correspondent with the credential
+						// used to upload
+						Pair<Credential, MyGoogleAccount> p = getGoogleCredentialForUpload(fi
+								.getSize());
+						Credential c = p.getFirst();
+						MyGoogleAccount myGoogle = p.getSecond();
+
 						Drive service = getDriveService(c);
 						try {
+							// upload the chunk, get the direct download url,
+							// and update new free space in MyGoogleAccount
 							File returnInfo = service.files()
 									.insert(uploadChunk).execute();
 							chunk.setChunkUrl(returnInfo.getDownloadUrl());
+							chunk.setMyGoogle(myGoogle);
+							chunk.setId(returnInfo.getId());
+							myGoogle.setFree_space(myGoogle.getFree_space()
+									- fi.getSize());
+							MyUtil.saveEntity(myGoogle);
 						} catch (IOException e) {
 							System.out.println("An error occured: " + e);
 							return false;
@@ -117,6 +135,7 @@ public class RestCall extends MyBaseServlet {
 						range += fi.getSize();
 					}
 				}
+				// update size of file, by the sum of all chunks's sizes
 				m_file.setFile_size(range);
 				MyUtil.saveEntity(m_file);
 
@@ -128,20 +147,20 @@ public class RestCall extends MyBaseServlet {
 
 		return false;
 	}
-	
+
 	@GET
 	@Path("/allfiles")
-	public JsonArray getAllChunkOfFile() throws Exception{
+	public JsonArray getAllChunkOfFile() throws Exception {
 		String file_uuid = request.getParameter("file_token");
 		MyFile f = MyUtil.getFileFromFileUuid(file_uuid);
 		if (f == null)
 			throw new Exception("No file found ");
-		
+
 		JsonArray array = new JsonArray();
 		for (MyChunk c : f.getList_chunk()) {
 			array.add(c.toJsonObject());
 		}
-		
+
 		return array;
 	}
 
@@ -154,13 +173,15 @@ public class RestCall extends MyBaseServlet {
 		return u.getMyFolder().getFoldersJSON();
 	}
 
-	@GET
+	@POST
 	@Path("/folder/set")
 	public boolean setFolderJSON() {
 		try {
 			User u = MyUtil.getUserFromUsername((String) request.getSession()
 					.getAttribute("username"));
+			String json = request.getParameter("folderJSON");
 			MyFolder f = u.getMyFolder();
+			f.setFoldersJSON(json);
 			Session session = MyUtil.getSessionFactory().openSession();
 			session.beginTransaction();
 			session.saveOrUpdate(f);
@@ -178,7 +199,7 @@ public class RestCall extends MyBaseServlet {
 	public JsonArray getAllFiles() {
 		User u = MyUtil.getUserFromUsername((String) request.getSession()
 				.getAttribute("username"));
-		
+
 		JsonArray array = new JsonArray();
 		for (MyFile f : u.getListAllFile()) {
 			array.add(f.toJsonObject());
@@ -187,11 +208,29 @@ public class RestCall extends MyBaseServlet {
 		return array;
 	}
 
-	private Credential getGoogleCredential() throws Exception {
-		String gg = getCurrentUser().getListGoogleAccount().get(0)
-				.getAccount_name();
-		return credentialManager2.getCredentialWithRefreshToken(
-				(String) request.getSession().getAttribute("username"), gg);
+	// look for the credential correspondent with the drive space thats enough
+	// to contain chunk. Return in pair, the credential and MyGoogleAccount
+	private Pair<Credential, MyGoogleAccount> getGoogleCredentialForUpload(
+			long file_size) throws Exception {
+		User u = getCurrentUser();
+		List<Credential> list = new ArrayList<Credential>();
+		for (int i = 0; i < u.getListGoogleAccount().size(); i++) {
+			String gg = getCurrentUser().getListGoogleAccount().get(i)
+					.getAccount_name();
+
+			MyGoogleAccount acc = MyUtil.getGoogleAccount(gg);
+
+			if (acc.getFree_space() >= file_size) {
+				Credential cr = credentialManager2
+						.getCredentialWithRefreshToken((String) request
+								.getSession().getAttribute(KEY_SESSION_USERID),
+								gg);
+
+				return new Pair<Credential, MyGoogleAccount>(cr, acc);
+			}
+		}
+
+		return null;
 	}
 
 	public User getCurrentUser() {
@@ -211,8 +250,48 @@ public class RestCall extends MyBaseServlet {
 	}
 
 	@GET
+	@Path("/freespace")
+	public long getFreeSpace() {
+		User u = getCurrentUser();
+		long result = 0L;
+		if (u.getListGoogleAccount().size() == 0) {
+			return 0L;
+		}
+		for (int i = 0; i < u.getListGoogleAccount().size(); i++) {
+			result += u.getListGoogleAccount().get(i).getFree_space();
+		}
+		return result;
+	}
+
+	@GET
 	@Path("/test")
 	public String test() {
 		return "it work";
+	}
+
+	@DELETE
+	@Path("/delete/{file_uuid}")
+	public boolean deleteFile(@PathParam("file_uuid") String uuid) throws Exception {
+		MyFile file = MyUtil.getFileFromFileUuid(uuid);
+		if (file.getMyUser().getUser_uuid() != request.getSession()
+				.getAttribute(KEY_SESSION_USERID)) {
+			return false;
+		}
+
+		User u = getCurrentUser();
+
+		List<MyChunk> listChunk = file.getList_chunk();
+		for (MyChunk c : listChunk) {
+			MyGoogleAccount g = c.getMyGoogle();
+			Credential cr = credentialManager2.getCredentialWithRefreshToken(
+					u.getUser_uuid(), g.getAccount_name());
+			
+			Drive service = getDriveService(cr);
+			service.files().delete(c.getId()).execute();
+			MyUtil.deleteEntity(c);
+		}
+		MyUtil.deleteEntity(file);
+
+		return false;
 	}
 }

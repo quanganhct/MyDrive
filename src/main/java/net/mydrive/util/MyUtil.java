@@ -3,6 +3,7 @@ package net.mydrive.util;
 import java.util.List;
 
 import net.mydrive.entities.MyFile;
+import net.mydrive.entities.MyGoogleAccount;
 import net.mydrive.entities.MyObject;
 import net.mydrive.entities.User;
 
@@ -85,7 +86,34 @@ public class MyUtil {
 		MyFile f = (MyFile) result.get(0);
 		f.getList_chunk().size();
 		s.close();
-		
+
 		return f;
+	}
+
+	public static boolean deleteEntity(MyObject o) {
+		try {
+			Session s = getSessionFactory().openSession();
+			s.beginTransaction();
+			s.delete(o);
+			s.getTransaction().commit();
+			s.close();
+			return true;
+		} catch (Exception e) {
+			System.err.println("Cannot delete Object " + e);
+			return false;
+		}
+	}
+
+	public static MyGoogleAccount getGoogleAccount(String accountName) {
+		Session s = getSessionFactory().openSession();
+		Query q = s
+				.createQuery("from MyGoogleAccount where account_name = :acc");
+		q.setParameter("acc", accountName);
+		List result = q.list();
+		if (result.size() == 0)
+			return null;
+		MyGoogleAccount g = (MyGoogleAccount) result.get(0);
+		s.close();
+		return g;
 	}
 }
