@@ -169,9 +169,10 @@ public class RestCall extends MyBaseServlet {
 	@GET
 	@Path("/folder/get")
 	public String getFolderJSON() throws Exception {
-		User u = MyUtil.getUserFromUsername((String) request.getSession()
-				.getAttribute("username"));
+		//User u = MyUtil.getUserFromUsername((String) request.getSession()
+		//		.getAttribute("username"));
 
+		User u = MyUtil.getUserFromUsername("root");
 		if (u == null) throw new Exception("No User");
 		
 		return u.getMyFolder().getFoldersJSON();

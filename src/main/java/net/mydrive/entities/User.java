@@ -73,7 +73,7 @@ public class User implements Serializable, MyObject {
 		this.listGoogleAccount = listGoogleAccount;
 	}
 
-	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "myUser")
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "myUser")
 	public MyFolder getMyFolder() {
 		return myFolder;
 	}

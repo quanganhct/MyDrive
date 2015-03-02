@@ -54,8 +54,8 @@ public class MyFolder implements Serializable, MyObject{
 //		this.listFiles = listFiles;
 //	}
 
-	@OneToOne(fetch = FetchType.EAGER)
-	@PrimaryKeyJoinColumn
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_uuid")
 	public User getMyUser() {
 		return myUser;
 	}

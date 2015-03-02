@@ -71,6 +71,7 @@ public class MyUtil {
 		User u = (User) result.get(0);
 		u.getListGoogleAccount().size();
 		u.getListAllFile().size();
+		u.getMyFolder();
 		s.close();
 
 		return u;
