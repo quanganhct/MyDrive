@@ -48,6 +48,8 @@ public class GoogleCredentialOfflineStore {
 
 	public String getRefreshToken(HttpServletRequest request, String userId,
 			String googleAcc) {
+		if (credentialMap == null)
+			System.err.println("map is null");
 		return getGoogleCredentialOffline(request).credentialMap.get(userId)
 				.get(googleAcc).refreshToken;
 	}

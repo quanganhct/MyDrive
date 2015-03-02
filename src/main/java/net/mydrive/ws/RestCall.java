@@ -47,6 +47,7 @@ import org.hibernate.Session;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.gson.JsonArray;
@@ -54,9 +55,6 @@ import com.google.gson.JsonArray;
 @Path("/command")
 public class RestCall extends MyBaseServlet {
 	private static final String KEY_SESSION_USERID = "user_id";
-
-	@Context
-	private HttpTransport M_TRANSPORT;
 
 	@Context
 	private HttpServletRequest request;
@@ -238,7 +236,7 @@ public class RestCall extends MyBaseServlet {
 			String gg = getCurrentUser().getListGoogleAccount().get(i)
 					.getAccount_name();
 			System.out.println("Google Acc : " + gg);
-			
+
 			MyGoogleAccount acc = MyUtil.getGoogleAccount(gg);
 
 			if (acc.getFree_space() >= file_size) {
@@ -297,7 +295,8 @@ public class RestCall extends MyBaseServlet {
 		f.setFoldersJSON("{ folder: [{ id: 0, name: null, parent: null, files: [] }]}");
 		f.setMyUser(u1);
 		MyUtil.saveEntity(f);
-		manuelInit(M_TRANSPORT);
+		manuelInit(new NetHttpTransport());
+		u1 = getCurrentUser();
 		initializeUserCredentialManager(u1);
 		return "it work";
 	}
@@ -337,6 +336,8 @@ public class RestCall extends MyBaseServlet {
 			((CredentialManager2) request.getSession().getAttribute(
 					"CredentialManager2")).save(request, u.getUser_uuid(),
 					g.getAccount_name(), g.getRefresh_token());
+			System.out.println(g.getAccount_name() + " : "
+					+ g.getRefresh_token());
 		}
 	}
 
@@ -361,6 +362,7 @@ public class RestCall extends MyBaseServlet {
 			request.getSession().setAttribute("CredentialManager2",
 					credentialManager2);
 			System.out.println("cred not null");
+			System.out.println(getClientSecret() + " " + hp + " " + JSON_FACTORY);
 
 		} catch (Exception e) {
 			System.err.println("cannot initialize cred store " + e);
