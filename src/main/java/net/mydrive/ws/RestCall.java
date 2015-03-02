@@ -143,6 +143,8 @@ public class RestCall extends MyBaseServlet {
 			} catch (FileUploadException e) {
 				System.err.println("Error Upload File " + e);
 			}
+		} else {
+			
 		}
 
 		return false;
@@ -177,6 +179,7 @@ public class RestCall extends MyBaseServlet {
 	@Path("/folder/set")
 	public boolean setFolderJSON() {
 		try {
+			
 			User u = MyUtil.getUserFromUsername((String) request.getSession()
 					.getAttribute("username"));
 			String json = request.getParameter("folderJSON");
@@ -266,12 +269,24 @@ public class RestCall extends MyBaseServlet {
 	@GET
 	@Path("/test")
 	public String test() {
+		request.getSession();
+		User u1 = new User();
+		u1.setUsername("root");
+		u1.setUser_uuid("123456");
+		MyUtil.saveEntity(u1);
+		
+		MyFolder f = new MyFolder();
+		f.setFolder_uuid("1234");
+		f.setFoldersJSON("{ folder: [{ id: 0, name: null, parent: null, files: [] }]}");
+		f.setMyUser(u1);
+		MyUtil.saveEntity(f);
 		return "it work";
 	}
 
 	@DELETE
 	@Path("/delete/{file_uuid}")
-	public boolean deleteFile(@PathParam("file_uuid") String uuid) throws Exception {
+	public boolean deleteFile(@PathParam("file_uuid") String uuid)
+			throws Exception {
 		MyFile file = MyUtil.getFileFromFileUuid(uuid);
 		if (file.getMyUser().getUser_uuid() != request.getSession()
 				.getAttribute(KEY_SESSION_USERID)) {
@@ -285,7 +300,7 @@ public class RestCall extends MyBaseServlet {
 			MyGoogleAccount g = c.getMyGoogle();
 			Credential cr = credentialManager2.getCredentialWithRefreshToken(
 					u.getUser_uuid(), g.getAccount_name());
-			
+
 			Drive service = getDriveService(cr);
 			service.files().delete(c.getId()).execute();
 			MyUtil.deleteEntity(c);
