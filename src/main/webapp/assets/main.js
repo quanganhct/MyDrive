@@ -114,16 +114,16 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 				$('body').on('click','.downloadFile',function(e){
 					e.preventDefault();
 					eventObject.setEvent($(this),'download');
-						console.log($(this).attr('href'));		
-						console.log("object loaded");
-
+						
 					var name = $(this).data("name");
 					var token = $(this).data("token");
 						console.log(name);
+						console.log("Adress: "+$(this).attr('href'));
+					var adress = $(this).attr('href');
+					remote.getAllFiles(adress,name,token,function(e){
 
-					remote.getAllFiles($(this).attr('href'),name,token,function(e){
-
-
+						console.log(adress);		
+						console.log("object loaded");
 					});
 				});
 
@@ -199,7 +199,8 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 //////////////////////////////////////////////////
 				var folder = {
 					structure : null,
-					current : null
+					current : null,
+					copy:{type:null,object:null}
 				}
 
 				folder.getStructure = function(){
@@ -245,12 +246,24 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 						return callback(e);
 					});
 				}
-				folder.setChildren = function(object,child){
 
+				folder.extractFile = function(token,folder,callback){
+					var files = folder.files;
+					var result = [];
+					var object = null;
+
+					for (var i = 0; i < files.length; i++) {
+						if(files[i].token != token){
+							result.push(files[i]);
+						}else{
+							object = files[i];
+						}
+							
+					}
+
+					return callback({listFiles:result,file:object});
 				}
-				folder.getChildren = function(object){
-					return object.children;
-				}
+
 				folder.findElementByKey = function(key,callback){
 					findElementRecurrent = function(key,currentStructure,result,callback){
 						var data = currentStructure;
@@ -424,6 +437,7 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 					return callback();
 				}
 
+				/*
 				folder.removeFileByFolder = function(folder,callback){
 				
 						var listToken = [];
@@ -450,6 +464,7 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 			
 					return callback(result);
 				}
+				*/
 
 				folder.getAllChildrenOfKey = function(key,callback){
 
@@ -478,11 +493,11 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 						folder.findChildren(listFolder[0].id,function(childrens){
 							listFolder = arrayConcat(listFolder,childrens)
 							listFolder.shift();
-							console.log("resultFolder size: "+resultFolder.length);
-							console.log("resultFile size: "+resultFile.length);
-							console.log({resultFolder:resultFolder,resultFile:resultFile});
+							//console.log("resultFolder size: "+resultFolder.length);
+							//console.log("resultFile size: "+resultFile.length);
+							//console.log({resultFolder:resultFolder,resultFile:resultFile});
 							returnChildren(listFolder,resultFolder,resultFile,callback);
-						})
+						});
 						
 
 					}
@@ -531,6 +546,23 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 
 					
 				}
+
+				/*
+				folder.moveFile = function(origin,destination,callback){ // function({file:file,folder:folder},destination:folder)
+					var file =origin.file;
+					var folder = origin.folder;
+
+					folder.removeFileOfArray(folder.files,file,function(e){
+						folder.files = e;
+						destination.files.push(file);
+						return callback();
+					});
+
+					
+
+
+				}
+				*/
 				
 				folder.init = function(){
 					//folder.findElementByKey("7");
@@ -601,20 +633,63 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 		console.log(data);
 	});
 	
-
+		/*
+		*
+		*		MENU for the files and folders
+		*
+		*/
 
         $(".files").contextmenu({
 				delegate: ".xe-action",
 				// menu: "#options",
 				menu: [
-					/*{title: "Cut", cmd: "cut", uiIcon: "ui-icon-scissors",action: function(event, ui){
-							alert("Cut");
+					{title: "Cut", cmd: "cut", uiIcon: "ui-icon-copy", action: function(event,ui){
+							var target = ui.target.closest('.xe-widget');
+							//console.log(target);
+							if(target.hasClass('xe-folder')){
+
+							}else if(target.hasClass('xe-file')){
+								var token = target.parent().find('.downloadFile').data('token');
+								console.log(token);
+								folder.extractFile(token,folder.getCurrent(),function(e){
+									console.log(e);
+									folder.getCurrent().files = e.listFiles;
+									folder.copy.type = "file";
+									folder.copy.object = e.file;
+									target.parent().remove();
+								});
+
+								
+							}
 						}
 					},
-					{title: "Copy", cmd: "copy", uiIcon: "ui-icon-copy"},
-					{title: "Paste", cmd: "paste", uiIcon: "ui-icon-clipboard", disabled: false },
+					{title: "Paste", cmd: "paste", uiIcon: "ui-icon-clipboard", action: function(event,ui){
+						if(folder.copy.object == null || folder.copy.type == null)
+								return ;
+
+
+							var target = ui.target.closest('.xe-widget');
+
+							if(target.hasClass('xe-folder')){
+								var key = target.data('key');
+								//console.log("Key: "+key);
+								
+
+								folder.findElementByKey(key,function(e){
+									e.files.push(folder.copy.object);
+									folder.copy.type = null;
+									folder.copy.object = null;
+									folder.saveFolderJson(function(e){
+							   			//var render = tmpl("template-file")({files:[pasteObject.object]});
+										//$(".files").append(render);
+							   		})
+								});
+							}
+
+
+						}
+					},
 					{title: "----"},
-					{title: "Edit", cmd: "edit", uiIcon: "ui-icon-pencil", disabled: true },*/
 					{title: "Delete", cmd: "delete", uiIcon: "ui-icon-trash",action: function(event,ui){
 							var target = ui.target.closest('.xe-widget');
 
@@ -653,15 +728,70 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 								})
 							}
 						} 
+					}
+				],
+				beforeOpen: function(event, ui) {
+					//console.log("before open");
+					console.log(ui);
+				},
+				select: function(event, ui) {
+					//console.log(ui);
+					//var node = $.ui.fancytree.getNode(ui.target);
+					//alert("select " + ui.cmd + " on " + node);
+				}
+			});
+
+		/*
+		*
+		*		MENU for the empty area
+		*
+		*/
+
+		var contextmenu = $("body").contextmenu({
+				delegate: ".files",//delegate: ".xe-action",
+				// menu: "#options",
+				menu: [
+					/*{title: "Cut", cmd: "cut", uiIcon: "ui-icon-scissors",action: function(event, ui){
+							alert("Cut");
+						}
 					},
+					
+					{title: "Copy", cmd: "copy", uiIcon: "ui-icon-copy"},
+					*/
+					{title: "Paste", cmd: "paste", uiIcon: "ui-icon-clipboard", action: function(event,ui){
+						if(folder.copy.object == null || folder.copy.type == null)
+								return ;
+
+							var current = folder.getCurrent();
+
+							if(folder.copy.type == "file"){
+								current.files.push(folder.copy.object);
+
+								folder.saveFolderJson(function(e){
+						   			var render = tmpl("template-file")({files:[folder.copy.object]});
+									$(".files").append(render);
+									
+									folder.copy.type = null;
+									folder.copy.object = null;
+						   		})
+							}
+						}
+					},
+					/*
+					{title: "----"},
+					{title: "Edit", cmd: "edit", uiIcon: "ui-icon-pencil", disabled: true },*/
+				
 					/*{title: "More", children: [
 					{title: "Sub 1", cmd: "sub1"},
 					{title: "Sub 2", cmd: "sub1"}
 					]}*/
 				],
 				beforeOpen: function(event, ui) {
-					//console.log("before open");
+					var target = ui.target.closest('.xe-widget');
+					if(target.hasClass('xe-folder') || target.hasClass('xe-file') || target.hasClass('xe-main') )
+						return false;
 
+					//console.log("Click on empty area");
 				},
 				select: function(event, ui) {
 					//var node = $.ui.fancytree.getNode(ui.target);
@@ -707,6 +837,8 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 				}else{
 					var oReq = new XMLHttpRequest();
 					oReq.open("GET", remote.options.loadUrl+data[0].files_url, true);
+
+					console.log("url: "+remote.options.loadUrl+data[0].files_url);
 					oReq.responseType = "arraybuffer";
 
 					oReq.onload = function(oEvent) {
