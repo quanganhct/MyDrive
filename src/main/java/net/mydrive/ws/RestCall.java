@@ -90,7 +90,9 @@ public class RestCall extends MyBaseServlet {
 	@Path("/upload/{uuid}")
 	public boolean uploadFile(@PathParam("uuid") String uuid) throws Exception {
 		User u = getCurrentUser();
-
+                //System.out.println("Cred value: ");
+                //System.out.println(request.getSession().getAttribute("cred").toString());
+                 
 		if (ServletFileUpload.isMultipartContent(request)) {
 
 			ServletFileUpload uploadHandler = new ServletFileUpload(
@@ -239,9 +241,9 @@ public class RestCall extends MyBaseServlet {
 			MyGoogleAccount acc = MyUtil.getGoogleAccount(gg);
 
 			if (acc.getFree_space() >= file_size) {
-				if (credentialManager2 == null)
-					throw new Exception("credential manager null");
-				Credential cr = credentialManager2
+				//if (credentialManager2 == null)
+				//	throw new Exception("credential manager null");
+				Credential cr = ((CredentialManager2)request.getSession().getAttribute("cred"))
 						.getCredentialWithRefreshToken((String) request
 								.getSession().getAttribute(KEY_SESSION_USERID),
 								gg);
@@ -350,6 +352,9 @@ public class RestCall extends MyBaseServlet {
 
 			credentialManager2 = new CredentialManager2(getClientSecret(), hp,
 					JSON_FACTORY);
+                        request.getSession().setAttribute("cred", credentialManager2);
+                        System.out.println("cerd not null");
+                        
 		} catch (Exception e) {
 			System.err.println("cannot initialize cred store " + e);
 		}
