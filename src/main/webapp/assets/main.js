@@ -3,7 +3,7 @@ $(function() {
 			var remote = {options:{
 				loadUrl:"/uploaded/files/",
 				uploadUrl:"/upload?uuid=",
-				getFolderJson:"/folder/get",
+				getFolderJson:"/rest/command/folder/get",
 				saveFolderJson:"/folder/save",
 				deleteUrl:"/files/delete",
 				space:"/upload/size"
@@ -895,7 +895,7 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 			}
 		}
 
-		app.run();
+		//app.run();
 		folder.init();
 
 
