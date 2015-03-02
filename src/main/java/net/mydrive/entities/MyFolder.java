@@ -64,7 +64,7 @@ public class MyFolder implements Serializable, MyObject{
 		this.myUser = myUser;
 	}
 
-	@Column(name = "foldersJSON")
+	@Column(name = "foldersJSON", columnDefinition="TEXT")
 	public String getFoldersJSON() {
 		return foldersJSON;
 	}
