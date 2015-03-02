@@ -228,6 +228,7 @@ public class RestCall extends MyBaseServlet {
 			MyGoogleAccount acc = MyUtil.getGoogleAccount(gg);
 
 			if (acc.getFree_space() >= file_size) {
+                                if(credentialManager2 == null) throw new Exception("credential manager null");
 				Credential cr = credentialManager2
 						.getCredentialWithRefreshToken((String) request
 								.getSession().getAttribute(KEY_SESSION_USERID),
@@ -241,17 +242,7 @@ public class RestCall extends MyBaseServlet {
 	}
 
 	public User getCurrentUser() {
-		Session session = MyUtil.getSessionFactory().openSession();
-
-		Query q = session.createQuery("from User where username = :username");
-		q.setParameter("username", request.getSession()
-				.getAttribute("username"));
-		List list = q.list();
-
-		User u = null;
-		if (list.size() > 0)
-			u = (User) list.get(0);
-		session.close();
+		User u = MyUtil.getUserFromUsername((String) request.getSession().getAttribute("username"));
 
 		return u;
 	}
@@ -280,13 +271,14 @@ public class RestCall extends MyBaseServlet {
 		MyUtil.saveEntity(u1);
 
 		request.getSession().setAttribute("username", "root");
-
+                request.getSession().setAttribute(KEY_SESSION_USERID, u1.getUser_uuid());
+                
 		MyFolder f = new MyFolder();
 		f.setFolder_uuid("1234");
 		f.setFoldersJSON("{ folder: [{ id: 0, name: null, parent: null, files: [] }]}");
 		f.setMyUser(u1);
 		MyUtil.saveEntity(f);
-		
+		//manuelInit();
 		initializeUserCredentialManager(u1);
 		return "it work";
 	}

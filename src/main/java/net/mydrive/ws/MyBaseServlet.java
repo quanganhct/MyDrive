@@ -47,6 +47,14 @@ public abstract class MyBaseServlet extends HttpServlet {
 				TRANSPORT, JSON_FACTORY);
 	}
 
+        public void manuelInit() {
+            credentialManager = new CredentialManager(getClientSecret(), TRANSPORT,
+				JSON_FACTORY);
+
+		credentialManager2 = new CredentialManager2(getClientSecret(),
+				TRANSPORT, JSON_FACTORY);
+        }
+        
 	private GoogleClientSecrets getClientSecret() {
 		Reader reader = new InputStreamReader(getServletContext()
 				.getResourceAsStream(CLIENT_SECRETS_FILE_PATH));

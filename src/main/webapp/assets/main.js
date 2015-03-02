@@ -2,7 +2,7 @@ $(function() {
 
 			var remote = {options:{
 				loadUrl:"/uploaded/files/",
-				uploadUrl:"/upload?uuid=",
+				uploadUrl:"/rest/command/upload/",
 				getFolderJson:"/rest/command/folder/get",
 				saveFolderJson:"/rest/command/folder/set",
 				deleteUrl:"/files/delete",
