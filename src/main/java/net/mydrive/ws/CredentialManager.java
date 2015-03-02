@@ -75,12 +75,13 @@ public class CredentialManager {
 					clientSecret.getWeb().getClientId(), clientSecret.getWeb()
 							.getClientSecret(), code, clientSecret.getWeb()
 							.getRedirectUris().get(0)).execute();
-
+                         System.out.println(response.getRefreshToken());
 			return buildEmpty()
 					.setAccessToken(response.getAccessToken())
 					.setRefreshToken(response.getRefreshToken())
 					.setExpirationTimeMilliseconds(
 							response.getExpiresInSeconds() * 1000);
+                       
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
