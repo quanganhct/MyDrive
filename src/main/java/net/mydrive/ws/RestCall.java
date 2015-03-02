@@ -46,6 +46,7 @@ import org.hibernate.Session;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.http.FileContent;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.services.drive.Drive;
@@ -106,16 +107,13 @@ public class RestCall extends MyBaseServlet {
 				MyUtil.saveEntity(m_file);
 
 				long range = 0;
+				int counter = 0;
 				for (FileItem fi : items) {
 					if (!fi.isFormField()) {
 						MyChunk chunk = new MyChunk();
 						chunk.setMyFile(m_file);
 						chunk.setFiles_range(range);
 						chunk.setFiles_size(fi.getSize());
-
-						File uploadChunk = new File();
-						// java.io.File file = new java.io.File("./tempt");
-						// fi.write(file);
 
 						// get MyGoogleAccount correspondent with the credential
 						// used to upload
@@ -128,14 +126,23 @@ public class RestCall extends MyBaseServlet {
 						try {
 							// upload the chunk, get the direct download url,
 							// and update new free space in MyGoogleAccount
+							counter++;
+							File uploadChunk = new File();
+							uploadChunk.setTitle(uuid + "." + counter);
+							java.io.File file = new java.io.File("./tempt");
+							fi.write(file);
+							FileContent content = new FileContent(null, file);
+
 							File returnInfo = service.files()
-									.insert(uploadChunk).execute();
+									.insert(uploadChunk, content).execute();
 							chunk.setChunkUrl(returnInfo.getDownloadUrl());
 							chunk.setMyGoogle(myGoogle);
 							chunk.setId(returnInfo.getId());
 							myGoogle.setFree_space(myGoogle.getFree_space()
 									- fi.getSize());
 							MyUtil.saveEntity(myGoogle);
+
+							file.delete();
 						} catch (IOException e) {
 							System.out.println("An error occured: " + e);
 							return false;
@@ -362,7 +369,8 @@ public class RestCall extends MyBaseServlet {
 			request.getSession().setAttribute("CredentialManager2",
 					credentialManager2);
 			System.out.println("cred not null");
-			System.out.println(getClientSecret() + " " + hp + " " + JSON_FACTORY);
+			System.out.println(getClientSecret() + " " + hp + " "
+					+ JSON_FACTORY);
 
 		} catch (Exception e) {
 			System.err.println("cannot initialize cred store " + e);
