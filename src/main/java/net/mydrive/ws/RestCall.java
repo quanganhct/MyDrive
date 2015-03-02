@@ -90,9 +90,9 @@ public class RestCall extends MyBaseServlet {
 	@Path("/upload/{uuid}")
 	public boolean uploadFile(@PathParam("uuid") String uuid) throws Exception {
 		User u = getCurrentUser();
-                //System.out.println("Cred value: ");
-                //System.out.println(request.getSession().getAttribute("cred").toString());
-                 
+		// System.out.println("Cred value: ");
+		// System.out.println(request.getSession().getAttribute("cred").toString());
+
 		if (ServletFileUpload.isMultipartContent(request)) {
 
 			ServletFileUpload uploadHandler = new ServletFileUpload(
@@ -237,16 +237,19 @@ public class RestCall extends MyBaseServlet {
 		for (int i = 0; i < u.getListGoogleAccount().size(); i++) {
 			String gg = getCurrentUser().getListGoogleAccount().get(i)
 					.getAccount_name();
-
+			System.out.println("Google Acc : " + gg);
+			
 			MyGoogleAccount acc = MyUtil.getGoogleAccount(gg);
 
 			if (acc.getFree_space() >= file_size) {
-				//if (credentialManager2 == null)
-				//	throw new Exception("credential manager null");
-				Credential cr = ((CredentialManager2)request.getSession().getAttribute("cred"))
-						.getCredentialWithRefreshToken((String) request
-								.getSession().getAttribute(KEY_SESSION_USERID),
-								gg);
+				// if (credentialManager2 == null)
+				// throw new Exception("credential manager null");
+				Credential cr = ((CredentialManager2) request.getSession()
+						.getAttribute("CredentialManager2"))
+						.getCredentialWithRefreshToken(
+								request,
+								(String) request.getSession().getAttribute(
+										KEY_SESSION_USERID), gg);
 
 				return new Pair<Credential, MyGoogleAccount>(cr, acc);
 			}
@@ -314,8 +317,10 @@ public class RestCall extends MyBaseServlet {
 		List<MyChunk> listChunk = file.getList_chunk();
 		for (MyChunk c : listChunk) {
 			MyGoogleAccount g = c.getMyGoogle();
-			Credential cr = credentialManager2.getCredentialWithRefreshToken(
-					u.getUser_uuid(), g.getAccount_name());
+			Credential cr = ((CredentialManager2) request.getSession()
+					.getAttribute("CredentialManager2"))
+					.getCredentialWithRefreshToken(request, u.getUser_uuid(),
+							g.getAccount_name());
 
 			Drive service = getDriveService(cr);
 			service.files().delete(c.getId()).execute();
@@ -329,8 +334,9 @@ public class RestCall extends MyBaseServlet {
 	private void initializeUserCredentialManager(User u) {
 
 		for (MyGoogleAccount g : u.getListGoogleAccount()) {
-			credentialManager2.save(u.getUser_uuid(), g.getAccount_name(),
-					g.getRefresh_token());
+			((CredentialManager2) request.getSession().getAttribute(
+					"CredentialManager2")).save(request, u.getUser_uuid(),
+					g.getAccount_name(), g.getRefresh_token());
 		}
 	}
 
@@ -352,9 +358,10 @@ public class RestCall extends MyBaseServlet {
 
 			credentialManager2 = new CredentialManager2(getClientSecret(), hp,
 					JSON_FACTORY);
-                        request.getSession().setAttribute("cred", credentialManager2);
-                        System.out.println("cerd not null");
-                        
+			request.getSession().setAttribute("CredentialManager2",
+					credentialManager2);
+			System.out.println("cred not null");
+
 		} catch (Exception e) {
 			System.err.println("cannot initialize cred store " + e);
 		}

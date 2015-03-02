@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import net.mydrive.service.GoogleCredentialOfflineStore;
 import net.mydrive.service.MyCredentialStore;
 
@@ -41,28 +43,31 @@ public class CredentialManager2 {
 		return c;
 	}
 
-	public Credential get(String userId, String googleAcc) {
+	public Credential get(HttpServletRequest request, String userId,
+			String googleAcc) {
 		Credential c = buildEmpty();
-		if (GoogleCredentialOfflineStore.getGoogleCredentialOffline()
-				.getUserCredential(userId, googleAcc, c)) {
+		if (GoogleCredentialOfflineStore.getGoogleCredentialOffline(request)
+				.getUserCredential(request, userId, googleAcc, c)) {
 			return c;
 		}
 		return null;
 	}
 
-	public void save(String userId, String googleAcc, Credential c) {
-		GoogleCredentialOfflineStore.getGoogleCredentialOffline()
-				.saveUserCredential(userId, googleAcc, c);
+	public void save(HttpServletRequest request, String userId,
+			String googleAcc, Credential c) {
+		GoogleCredentialOfflineStore.getGoogleCredentialOffline(request)
+				.saveUserCredential(request, userId, googleAcc, c);
 	}
 
-	public void save(String userId, String googleAcc, String refreshToken) {
-		GoogleCredentialOfflineStore.getGoogleCredentialOffline()
-				.addUserDataToStore(userId, googleAcc, refreshToken);
+	public void save(HttpServletRequest request, String userId,
+			String googleAcc, String refreshToken) {
+		GoogleCredentialOfflineStore.getGoogleCredentialOffline(request)
+				.addUserDataToStore(request, userId, googleAcc, refreshToken);
 	}
 
-	public void delete(String userId) {
-		GoogleCredentialOfflineStore.getGoogleCredentialOffline()
-				.deleteUserCredential(userId);
+	public void delete(HttpServletRequest request, String userId) {
+		GoogleCredentialOfflineStore.getGoogleCredentialOffline(request)
+				.deleteUserCredential(request, userId);
 	}
 
 	public String getAuthorizationUrl() {
@@ -73,11 +78,11 @@ public class CredentialManager2 {
 		return url.build();
 	}
 
-	public Credential getCredentialWithRefreshToken(String userId,
-			String googleAcc) throws Exception {
+	public Credential getCredentialWithRefreshToken(HttpServletRequest request,
+			String userId, String googleAcc) throws Exception {
 		String refreshToken = GoogleCredentialOfflineStore
-				.getGoogleCredentialOffline()
-				.getRefreshToken(userId, googleAcc);
+				.getGoogleCredentialOffline(request).getRefreshToken(request,
+						userId, googleAcc);
 
 		if (refreshToken == null)
 			throw new Exception("Refresh token null");
