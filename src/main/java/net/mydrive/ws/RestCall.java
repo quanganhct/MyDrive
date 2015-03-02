@@ -168,10 +168,12 @@ public class RestCall extends MyBaseServlet {
 
 	@GET
 	@Path("/folder/get")
-	public String getFolderJSON() {
+	public String getFolderJSON() throws Exception {
 		User u = MyUtil.getUserFromUsername((String) request.getSession()
 				.getAttribute("username"));
 
+		if (u == null) throw new Exception("No User");
+		
 		return u.getMyFolder().getFoldersJSON();
 	}
 
@@ -274,6 +276,8 @@ public class RestCall extends MyBaseServlet {
 		u1.setUsername("root");
 		u1.setUser_uuid("123456");
 		MyUtil.saveEntity(u1);
+		
+		request.getSession().setAttribute("username", "root");
 		
 		MyFolder f = new MyFolder();
 		f.setFolder_uuid("1234");
