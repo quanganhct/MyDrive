@@ -29,12 +29,12 @@ import com.google.gson.Gson;
 @SuppressWarnings("serial")
 public abstract class MyBaseServlet extends HttpServlet {
 	private static final HttpTransport TRANSPORT = new NetHttpTransport();
-	private static final JsonFactory JSON_FACTORY = new JacksonFactory();
+	protected static final JsonFactory JSON_FACTORY = new JacksonFactory();
 	private static final String KEY_SESSION_USERID = "user_id";
 	private static final String DEFAULT_MIMETYPE = "/test/plain";
 	public static final String CLIENT_SECRETS_FILE_PATH = "/WEB-INF/client_secrets.json";
 
-	private CredentialManager credentialManager = null;
+	protected CredentialManager credentialManager = null;
 	protected CredentialManager2 credentialManager2 = null;
 
 	@Override
@@ -47,16 +47,10 @@ public abstract class MyBaseServlet extends HttpServlet {
 				TRANSPORT, JSON_FACTORY);
 	}
 
-        public void manuelInit() {
-            credentialManager = new CredentialManager(getClientSecret(), TRANSPORT,
-				JSON_FACTORY);
-
-		credentialManager2 = new CredentialManager2(getClientSecret(),
-				TRANSPORT, JSON_FACTORY);
-        }
-        
 	private GoogleClientSecrets getClientSecret() {
-		Reader reader = new InputStreamReader(getServletContext()
+		// Reader reader = new InputStreamReader(getServletContext()
+		// .getResourceAsStream(CLIENT_SECRETS_FILE_PATH));
+		Reader reader = new InputStreamReader(getClass().getClassLoader()
 				.getResourceAsStream(CLIENT_SECRETS_FILE_PATH));
 		try {
 			return GoogleClientSecrets.load(JSON_FACTORY, reader);

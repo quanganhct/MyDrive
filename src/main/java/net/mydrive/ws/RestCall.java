@@ -12,11 +12,14 @@ package net.mydrive.ws;
  */
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
@@ -42,6 +45,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.gson.JsonArray;
@@ -51,10 +56,16 @@ public class RestCall extends MyBaseServlet {
 	private static final String KEY_SESSION_USERID = "user_id";
 
 	@Context
+	private HttpTransport M_TRANSPORT;
+
+	@Context
 	private HttpServletRequest request;
 
 	@Context
 	private HttpServletResponse response;
+
+	@Context
+	private ServletContext context;
 
 	@POST
 	@Path("/signup")
@@ -228,7 +239,8 @@ public class RestCall extends MyBaseServlet {
 			MyGoogleAccount acc = MyUtil.getGoogleAccount(gg);
 
 			if (acc.getFree_space() >= file_size) {
-                                if(credentialManager2 == null) throw new Exception("credential manager null");
+				if (credentialManager2 == null)
+					throw new Exception("credential manager null");
 				Credential cr = credentialManager2
 						.getCredentialWithRefreshToken((String) request
 								.getSession().getAttribute(KEY_SESSION_USERID),
@@ -242,7 +254,8 @@ public class RestCall extends MyBaseServlet {
 	}
 
 	public User getCurrentUser() {
-		User u = MyUtil.getUserFromUsername((String) request.getSession().getAttribute("username"));
+		User u = MyUtil.getUserFromUsername((String) request.getSession()
+				.getAttribute("username"));
 
 		return u;
 	}
@@ -271,14 +284,15 @@ public class RestCall extends MyBaseServlet {
 		MyUtil.saveEntity(u1);
 
 		request.getSession().setAttribute("username", "root");
-                request.getSession().setAttribute(KEY_SESSION_USERID, u1.getUser_uuid());
-                
+		request.getSession()
+				.setAttribute(KEY_SESSION_USERID, u1.getUser_uuid());
+
 		MyFolder f = new MyFolder();
 		f.setFolder_uuid("1234");
 		f.setFoldersJSON("{ folder: [{ id: 0, name: null, parent: null, files: [] }]}");
 		f.setMyUser(u1);
 		MyUtil.saveEntity(f);
-		//manuelInit();
+		manuelInit(M_TRANSPORT);
 		initializeUserCredentialManager(u1);
 		return "it work";
 	}
@@ -311,10 +325,34 @@ public class RestCall extends MyBaseServlet {
 	}
 
 	private void initializeUserCredentialManager(User u) {
-		
+
 		for (MyGoogleAccount g : u.getListGoogleAccount()) {
 			credentialManager2.save(u.getUser_uuid(), g.getAccount_name(),
 					g.getRefresh_token());
 		}
 	}
+
+	private GoogleClientSecrets getClientSecret() {
+		try {
+			Reader reader = new InputStreamReader(
+					context.getResourceAsStream(CLIENT_SECRETS_FILE_PATH));
+			return GoogleClientSecrets.load(JSON_FACTORY, reader);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException("No client secret");
+		}
+	}
+
+	public void manuelInit(HttpTransport hp) {
+		try {
+			credentialManager = new CredentialManager(getClientSecret(), hp,
+					JSON_FACTORY);
+
+			credentialManager2 = new CredentialManager2(getClientSecret(), hp,
+					JSON_FACTORY);
+		} catch (Exception e) {
+			System.err.println("cannot initialize cred store " + e);
+		}
+	}
+
 }
