@@ -55,6 +55,11 @@ public class CredentialManager2 {
 				.saveUserCredential(userId, googleAcc, c);
 	}
 
+	public void save(String userId, String googleAcc, String refreshToken) {
+		GoogleCredentialOfflineStore.getGoogleCredentialOffline()
+				.addUserDataToStore(userId, googleAcc, refreshToken);
+	}
+
 	public void delete(String userId) {
 		GoogleCredentialOfflineStore.getGoogleCredentialOffline()
 				.deleteUserCredential(userId);

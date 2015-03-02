@@ -103,8 +103,8 @@ public class RestCall extends MyBaseServlet {
 						chunk.setFiles_size(fi.getSize());
 
 						File uploadChunk = new File();
-						//java.io.File file = new java.io.File("./tempt");
-						//fi.write(file);
+						// java.io.File file = new java.io.File("./tempt");
+						// fi.write(file);
 
 						// get MyGoogleAccount correspondent with the credential
 						// used to upload
@@ -144,7 +144,7 @@ public class RestCall extends MyBaseServlet {
 				System.err.println("Error Upload File " + e);
 			}
 		} else {
-			
+
 		}
 
 		return false;
@@ -169,12 +169,13 @@ public class RestCall extends MyBaseServlet {
 	@GET
 	@Path("/folder/get")
 	public String getFolderJSON() throws Exception {
-		//User u = MyUtil.getUserFromUsername((String) request.getSession()
-		//		.getAttribute("username"));
+		// User u = MyUtil.getUserFromUsername((String) request.getSession()
+		// .getAttribute("username"));
 
 		User u = MyUtil.getUserFromUsername("root");
-		if (u == null) throw new Exception("No User");
-		
+		if (u == null)
+			throw new Exception("No User");
+
 		return u.getMyFolder().getFoldersJSON();
 	}
 
@@ -182,7 +183,7 @@ public class RestCall extends MyBaseServlet {
 	@Path("/folder/set")
 	public boolean setFolderJSON() {
 		try {
-			
+
 			User u = MyUtil.getUserFromUsername((String) request.getSession()
 					.getAttribute("username"));
 			String json = request.getParameter("folderJSON");
@@ -277,14 +278,16 @@ public class RestCall extends MyBaseServlet {
 		u1.setUsername("root");
 		u1.setUser_uuid("123456");
 		MyUtil.saveEntity(u1);
-		
+
 		request.getSession().setAttribute("username", "root");
-		
+
 		MyFolder f = new MyFolder();
 		f.setFolder_uuid("1234");
 		f.setFoldersJSON("{ folder: [{ id: 0, name: null, parent: null, files: [] }]}");
 		f.setMyUser(u1);
 		MyUtil.saveEntity(f);
+		
+		initializeUserCredentialManager(u1);
 		return "it work";
 	}
 
@@ -313,5 +316,13 @@ public class RestCall extends MyBaseServlet {
 		MyUtil.deleteEntity(file);
 
 		return false;
+	}
+
+	private void initializeUserCredentialManager(User u) {
+		
+		for (MyGoogleAccount g : u.getListGoogleAccount()) {
+			credentialManager2.save(u.getUser_uuid(), g.getAccount_name(),
+					g.getRefresh_token());
+		}
 	}
 }

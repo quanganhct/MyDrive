@@ -56,5 +56,12 @@ public class GoogleCredentialOfflineStore {
 		myStore.credentialMap.get(userId).put(googleAcc, data);
 	}
 	
-	
+	public void addUserDataToStore(String userId, String googleAcc, String refreshToken) {
+		CredentialDataOffline data = new CredentialDataOffline();
+		data.refreshToken = refreshToken;
+		if (!myStore.credentialMap.containsKey(userId))
+			myStore.credentialMap.put(userId,
+					new HashMap<String, CredentialDataOffline>());
+		myStore.credentialMap.get(userId).put(googleAcc, data);
+	}
 }
