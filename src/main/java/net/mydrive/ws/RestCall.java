@@ -103,8 +103,8 @@ public class RestCall extends MyBaseServlet {
 						chunk.setFiles_size(fi.getSize());
 
 						File uploadChunk = new File();
-						java.io.File file = new java.io.File("./tempt");
-						fi.write(file);
+						//java.io.File file = new java.io.File("./tempt");
+						//fi.write(file);
 
 						// get MyGoogleAccount correspondent with the credential
 						// used to upload
