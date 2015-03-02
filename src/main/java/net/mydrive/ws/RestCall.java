@@ -178,7 +178,7 @@ public class RestCall extends MyBaseServlet {
 		return u.getMyFolder().getFoldersJSON();
 	}
 
-	@POST
+	@GET
 	@Path("/folder/set")
 	public boolean setFolderJSON() {
 		try {

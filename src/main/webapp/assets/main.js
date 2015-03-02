@@ -4,7 +4,7 @@ $(function() {
 				loadUrl:"/uploaded/files/",
 				uploadUrl:"/upload?uuid=",
 				getFolderJson:"/rest/command/folder/get",
-				saveFolderJson:"/folder/save",
+				saveFolderJson:"/rest/command/folder/set",
 				deleteUrl:"/files/delete",
 				space:"/upload/size"
 			}};
@@ -383,7 +383,7 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 						
 				}
 				folder.saveFolderJson = function(callback){
-					$.get(remote.options.saveFolderJson,{data:JSON.stringify({folder:folder.getStructure()})},function(e){
+					$.get(remote.options.saveFolderJson,{folderJSON:JSON.stringify({folder:folder.getStructure()})},function(e){
 						return callback(e);
 					});
 					
@@ -391,9 +391,12 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 
 				folder.getFolderJson = function(callback){
 					$.get(remote.options.getFolderJson,function(e){
-						console.log(e);
+						//console.log(e);
+						e = JSON.stringify(eval('('+e+')'));
+						var json = JSON.parse(e);
 
-						folder.setStructure(e.folder);
+						folder.setStructure(json.folder);
+						//console.log(folder.structure);
 						return callback(e);
 					})
 					/* Data look like : Save it like a json, it's important to not consider it like a java object but like a text when u save it and return it like a json
