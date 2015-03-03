@@ -158,9 +158,12 @@ public class RestCall extends MyBaseServlet {
 
 							File returnInfo = service.files()
 									.insert(uploadChunk, content).execute();
+							
 							chunk.setChunkUrl(returnInfo.getDownloadUrl());
 							chunk.setMyGoogle(myGoogle);
 							chunk.setId(returnInfo.getId());
+							chunk.setFiles_range(range);
+							
 							myGoogle.setFree_space(myGoogle.getFree_space()
 									- fi.getSize());
 							MyUtil.saveEntity(myGoogle);
@@ -172,13 +175,17 @@ public class RestCall extends MyBaseServlet {
 							fileObj.addProperty("type", "");
 							fileObj.addProperty("deleteType", "DELETE");
 							fileObj.addProperty("contentRange", range);
-							fileObj.addProperty("maxSize", getMaxSize(contentRange));
+							fileObj.addProperty("maxSize",
+									getMaxSize(contentRange));
 							fileObj.addProperty("origin", fileName);
 							fileObj.addProperty("token", fileUuid);
-							fileObj.addProperty("url", returnInfo.getDownloadUrl());
-							fileObj.addProperty("deleteUrl", returnInfo.getDownloadUrl());
-							fileObj.addProperty("files_access_token", c.getAccessToken());
-							
+							fileObj.addProperty("url",
+									returnInfo.getWebContentLink());
+							fileObj.addProperty("deleteUrl",
+									returnInfo.getWebContentLink());
+							fileObj.addProperty("files_access_token",
+									c.getAccessToken());
+
 							jsonList.add(fileObj);
 							obj.add("files", jsonList);
 
@@ -243,7 +250,7 @@ public class RestCall extends MyBaseServlet {
 					.getCredentialWithRefreshToken(request, (String) request
 							.getSession().getAttribute(KEY_SESSION_USERID), gg);
 			JsonObject obj = c.toJsonObject();
-			obj.addProperty("files_access_token", cr.getAccessToken());
+			//obj.addProperty("files_access_token", cr.getAccessToken());
 			array.add(obj);
 		}
 		System.out.println(array.toString());

@@ -68,10 +68,10 @@ public class MyChunk implements Serializable, MyObject {
 
 	public JsonObject toJsonObject() {
 		JsonObject jo = new JsonObject();
-		jo.addProperty("files_url", this.getChunkUrl());
-		jo.addProperty("files_range", this.files_range);
-		jo.addProperty("files_size", this.files_size);
-		jo.addProperty("id", this.Id);
+		jo.addProperty("url", this.getChunkUrl());
+		jo.addProperty("contentRange", this.files_range);
+		jo.addProperty("size", this.files_size);
+		jo.addProperty("token", this.myFile.getFile_uuid());
 		// Don't foget to add this. It's the access_token of the account used
 		// for upload
 		// jo.addProperty("files_access_token",blabla);
