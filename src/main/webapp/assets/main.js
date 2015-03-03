@@ -5,7 +5,7 @@ $(function() {
 				uploadUrl:"/rest/command/upload/",
 				getFolderJson:"/rest/command/folder/get",
 				saveFolderJson:"/rest/command/folder/set",
-				deleteUrl:"/files/delete",
+				deleteUrl:"/rest/command/delete",
 				space:"/upload/size",
 				allFiles:"/rest/command/allfiles"
 			}};
@@ -62,12 +62,17 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 							//console.log(result[1].files_range);
 							//console.log(result[2].files_range);
 							//console.log(result[3].files_range);
-							
+							app.loadBar.max = result.length;
+							app.showLoading();
+							//app.updateLoading();
 							app.load(result,0,name,token,function(resultLoad){
 									//app.fso = new FSO(1024 * 1024 * 1024 * 10, true);
 									console.log(resultLoad);
 									var url = app.fso.toURL(name);
 									$.fileDownload(url);
+									app.loadBar.max=0;
+									app.loadBar.current=1;
+
 									//app.fso.createQueue().rm(token).execute();
 							});
 							
@@ -821,6 +826,7 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 		var app ={
 			fso: null,
 			fsq:null,
+			loadBar :{max:5,current:1},
 			data : [],
 			getSpace : function(){
 				$.get(remote.options.space,function(e){
@@ -831,10 +837,43 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 			cleanDrop : function(){
 				$('.files').html("");
 			},
-			delete : function(token,callback){
-				$.get(remote.options.deleteUrl,{tokens:token},function(e){
-					return callback(e);
-				})
+			showLoading : function(){
+		            $.blockUI({ message: $('#loader') }); 
+		           //app.updateLoading();
+			},
+			updateLoading : function(){
+				if(app.loadBar.current > app.loadBar.max)
+					return;
+				$('#telechargementBar').animate({
+					width: (app.loadBar.current/app.loadBar.max)*100+"%",
+				}, 60000, function() {
+					
+				});
+				console.log((app.loadBar.current/app.loadBar.max)*100+"%");
+				
+				
+				
+			},
+			hideLoading : function(){
+					$.unblockUI();
+			},
+			delete : function(tokens,callback){
+				if(tokens.length == 0)
+					return;
+				if(tokens.length == 1){
+					var token = tokens[0];
+
+					$.get(remote.options.deleteUrl+"/"+token,function(e){
+						return callback(e);
+					});
+				}else{
+					var token = tokens[0];
+					tokens.shift();
+					$.get(remote.options.deleteUrl+"/"+token,function(e){});
+					app.delete(tokens,callback);
+				}
+
+				
 				/*
 				$(".template-download .xe-vertical-counter-blue").each(function(index, el) {
 					if($(el).hasClass('xe-file')){
@@ -849,34 +888,38 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 			load: function(data,num,name,token,callback){
 				console.log("LOAD: "+num);
 				if(data.length == 0){
+					app.hideLoading();
 					callback(true);
 				}else{
 					
 					var oReq = new XMLHttpRequest();
 					oReq.open("GET",data[0].files_url+"&access_token="+data[0].files_access_token, true);
 
-					console.log("url: https://docs.google.com/uc?export=download&id="+data[0].id);
+					//console.log("url: https://docs.google.com/uc?export=download&id="+data[0].id);
 					oReq.responseType = "arraybuffer";
 
 					oReq.onload = function(oEvent) {
-						console.log(oEvent);
-
+						//console.log(oEvent);
+						
+						$('#telechargementBar').css("width",(app.loadBar.current/app.loadBar.max)*100+"%");
+						app.loadBar.current++;
+						console.log((app.loadBar.current/app.loadBar.max)*100+"%");
 					  //var blob = new Blob([oReq.response], {type: "application/zip"});
 					  //var object = {name:data[0].files_range,data:oReq.response,type:blob.type,size:blob.size}
 					  //delete blob;
 					  data.shift();
 					 
 					  app.fsq = app.fso.createQueue();
-					  console.log("FSQ created");
-					  console.log(app.fso);
-					  console.log(app.fsq);
+					  //console.log("FSQ created");
+					  //console.log(app.fso);
+					  //console.log(app.fsq);
 					  if(num == 0){
 					  	 app.fsq.write(
 							name,
 							oReq.response,
 							function() { console.log('wrote to file');
 						}).execute(function(){
-							console.log("execute :"+num);
+							//console.log("execute :"+num);
 								var nextNum = num +1 ;
 								setTimeout(function(){
 									app.load(data,nextNum,name,token,callback);
@@ -890,7 +933,7 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 							oReq.response,
 							function() { console.log('Append to file');
 						}).execute(function(){
-							console.log("execute :"+num);
+							//console.log("execute :"+num);
 								var nextNum = num +1 ;
 								setTimeout(function(){
 									app.load(data,nextNum,name,token,callback);
@@ -914,6 +957,7 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 		}
 
 		app.run();
+		//app.showLoading();
 		folder.init();
 
 
