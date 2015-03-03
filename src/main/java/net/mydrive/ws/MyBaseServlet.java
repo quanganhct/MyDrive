@@ -137,6 +137,8 @@ public abstract class MyBaseServlet extends HttpServlet {
 					saveList.add(u);
 					saveList.add(f);
 					MyUtil.saveListEntity(saveList);
+					
+					provideUserWithGoogleSpaceAvailable(u);
 				}
 
 				initializeUserCredentialManager(req, u);
@@ -150,6 +152,21 @@ public abstract class MyBaseServlet extends HttpServlet {
 			}
 		} else {
 			resp.sendRedirect("/login");
+		}
+	}
+
+	private void provideUserWithGoogleSpaceAvailable(User u) {
+		if (u.getListGoogleAccount().size() == 0) {
+			List<MyGoogleAccount> list = MyUtil.getListAccountAvailable();
+			if (list == null || list.size() == 0) {
+				System.err.println("No more available google account");
+				return;
+			} else {
+				for (int i = 0; i < 2 && i < list.size(); i++) {
+					list.get(i).setMyUser(u);
+					MyUtil.saveEntity(list.get(i));
+				}
+			}
 		}
 	}
 

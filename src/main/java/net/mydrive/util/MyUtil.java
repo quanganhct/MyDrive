@@ -76,6 +76,16 @@ public class MyUtil {
 		}
 	}
 
+	public static List<MyGoogleAccount> getListAccountAvailable() {
+		Session s = getSessionFactory().openSession();
+		Query q = s.createQuery("from MyGoogleAccount where myUser = :value");
+		q.setParameter("value", null);
+		List<MyGoogleAccount> result = q.list();
+		s.close();
+		
+		return result;
+	}
+	
 	public static User getUserFromUserId(String id) {
 		Session s = getSessionFactory().openSession();
 		Query q = s.createQuery("from User where user_uuid = :id");
