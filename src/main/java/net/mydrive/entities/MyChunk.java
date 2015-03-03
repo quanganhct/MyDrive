@@ -20,7 +20,7 @@ import com.google.gson.JsonObject;
 
 @Entity
 @Table(name = "mychunk")
-public class MyChunk implements Serializable, MyObject{
+public class MyChunk implements Serializable, MyObject {
 
 	private String Id;
 
@@ -29,9 +29,9 @@ public class MyChunk implements Serializable, MyObject{
 	private Long files_range;
 
 	private Long files_size;
-	
+
 	private String chunkUrl;
-	
+
 	private MyGoogleAccount myGoogle;
 
 	public MyChunk() {
@@ -71,9 +71,10 @@ public class MyChunk implements Serializable, MyObject{
 		jo.addProperty("files_url", this.getChunkUrl());
 		jo.addProperty("files_range", this.files_range);
 		jo.addProperty("files_size", this.files_size);
-                jo.addProperty("id", this.Id);
-                // Don't foget to add this. It's the access_token of the account used for upload
-                // jo.addProperty("files_access_token",blabla); 
+		jo.addProperty("id", this.Id);
+		// Don't foget to add this. It's the access_token of the account used
+		// for upload
+		// jo.addProperty("files_access_token",blabla);
 		return jo;
 	}
 
@@ -86,7 +87,7 @@ public class MyChunk implements Serializable, MyObject{
 		Id = id;
 	}
 
-	@Column(name = "chunkUrl")
+	@Column(name = "chunkUrl", columnDefinition = "TEXT")
 	public String getChunkUrl() {
 		return chunkUrl;
 	}
