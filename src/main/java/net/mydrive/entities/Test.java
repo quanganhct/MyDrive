@@ -48,18 +48,17 @@ public class Test {
 		// System.out.println(UUID.randomUUID().toString());
 
 		User u1 = new User();
-		u1.setUsername("root");
 		u1.setUser_uuid("123456");
 		MyUtil.saveEntity(u1);
 
 		MyFolder f = new MyFolder();
-		u1 = MyUtil.getUserFromUsername("root");
+		u1 = MyUtil.getUserFromUserId("root");
 		f.setFolder_uuid("1234");
 		f.setFoldersJSON("{ folder: [{ id: 0, name: null, parent: null, files: [] }]}");
 		f.setMyUser(u1);
 		MyUtil.saveEntity(f);
 
-		User u = MyUtil.getUserFromUsername("root");
+		User u = MyUtil.getUserFromUserId("root");
 
 		
 		

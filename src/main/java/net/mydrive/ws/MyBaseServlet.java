@@ -9,11 +9,20 @@ package net.mydrive.ws;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import net.mydrive.entities.MyFolder;
+import net.mydrive.entities.MyGoogleAccount;
+import net.mydrive.entities.MyObject;
+import net.mydrive.entities.User;
+import net.mydrive.util.MyUtil;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
@@ -48,10 +57,10 @@ public abstract class MyBaseServlet extends HttpServlet {
 	}
 
 	private GoogleClientSecrets getClientSecret() {
-		// Reader reader = new InputStreamReader(getServletContext()
-		// .getResourceAsStream(CLIENT_SECRETS_FILE_PATH));
-		Reader reader = new InputStreamReader(getClass().getClassLoader()
+		Reader reader = new InputStreamReader(getServletContext()
 				.getResourceAsStream(CLIENT_SECRETS_FILE_PATH));
+		// Reader reader = new InputStreamReader(getClass().getClassLoader()
+		// .getResourceAsStream(CLIENT_SECRETS_FILE_PATH));
 		try {
 			return GoogleClientSecrets.load(JSON_FACTORY, reader);
 		} catch (IOException e) {
@@ -110,8 +119,29 @@ public abstract class MyBaseServlet extends HttpServlet {
 			try {
 				Userinfoplus inf = service.userinfo().get().execute();
 				String id = inf.getId();
-				credentialManager.save(id, c);
 				req.getSession().setAttribute(KEY_SESSION_USERID, id);
+
+				req.getSession().setAttribute("CredentialManager2",
+						credentialManager2);
+
+				User u = MyUtil.getUserFromUserId(id);
+				if (u == null) {
+					u = new User();
+					u.setUser_uuid(id);
+					MyFolder f = new MyFolder();
+					f.setMyUser(u);
+					f.setFolder_uuid(UUID.randomUUID().toString());
+					f.setFoldersJSON("{ folder: [{ id: 0, name: null, parent: null, files: [] }]}");
+					u.setMyFolder(f);
+					List<MyObject> saveList = new ArrayList<MyObject>();
+					saveList.add(u);
+					saveList.add(f);
+					MyUtil.saveListEntity(saveList);
+				}
+
+				initializeUserCredentialManager(req, u);
+
+				credentialManager.save(id, c);
 				resp.sendRedirect("/index");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -120,6 +150,18 @@ public abstract class MyBaseServlet extends HttpServlet {
 			}
 		} else {
 			resp.sendRedirect("/login");
+		}
+	}
+
+	private void initializeUserCredentialManager(HttpServletRequest request,
+			User u) {
+
+		for (MyGoogleAccount g : u.getListGoogleAccount()) {
+			((CredentialManager2) request.getSession().getAttribute(
+					"CredentialManager2")).save(request, u.getUser_uuid(),
+					g.getAccount_name(), g.getRefresh_token());
+			System.out.println(g.getAccount_name() + " : "
+					+ g.getRefresh_token());
 		}
 	}
 

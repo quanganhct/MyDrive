@@ -61,10 +61,25 @@ public class MyUtil {
 		}
 	}
 
-	public static User getUserFromUsername(String username) {
+	public static void saveListEntity(List<MyObject> l) {
+		try {
+			Session s = getSessionFactory().openSession();
+			s.beginTransaction();
+			for (MyObject o : l) {
+				s.saveOrUpdate(o);
+			}
+			s.getTransaction().commit();
+			s.close();
+
+		} catch (Exception e) {
+			System.err.println("Cannot save Object : " + e);
+		}
+	}
+
+	public static User getUserFromUserId(String id) {
 		Session s = getSessionFactory().openSession();
-		Query q = s.createQuery("from User where username = :username");
-		q.setParameter("username", username);
+		Query q = s.createQuery("from User where user_uuid = :id");
+		q.setParameter("id", id);
 		List result = q.list();
 		if (result.size() == 0)
 			return null;

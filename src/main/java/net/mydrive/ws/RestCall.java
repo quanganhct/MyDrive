@@ -70,24 +70,6 @@ public class RestCall extends MyBaseServlet {
 	@Context
 	private ServletContext context;
 
-	@POST
-	@Path("/signup")
-	public boolean signUp() throws Exception {
-		String username = (String) request.getAttribute("username");
-		String pwd = (String) request.getAttribute("password");
-
-		User u = MyUtil.getUserFromUsername(username);
-		if (u != null) {
-			throw new Exception("User exist ");
-		}
-
-		u = new User();
-		u.setUsername(username);
-		u.setPwdEncode(pwd);
-		u.setUser_uuid(UUID.randomUUID().toString());
-		MyUtil.saveEntity(u);
-		return true;
-	}
 
 	@POST
 	@Path("/upload/{uuid}")
@@ -103,41 +85,34 @@ public class RestCall extends MyBaseServlet {
 
 			ServletFileUpload uploadHandler = new ServletFileUpload(
 					new DiskFileItemFactory());
-			JsonArray jsonArray = new JsonArray();
 			try {
 				List<FileItem> items = uploadHandler.parseRequest(request);
-				MyFile m_file = new MyFile();
-				m_file.setFile_uuid(uuid);
-				m_file.setModified(new Date());
-				m_file.setFile_name(items.get(0).getName());
-				m_file.setFile_size(0);
-				MyUtil.saveEntity(m_file);
 
-				Enumeration headerNames = request.getHeaderNames();
+				
+				Enumeration<String> headerNames = request.getHeaderNames();
 				while (headerNames.hasMoreElements()) {
 					String key = (String) headerNames.nextElement();
 					String value = request.getHeader(key);
 					// map.put(key, value);
 					System.out.println("Key: " + key + " Value:" + value);
 				}
-
-				String contentRange = request.getHeader("Content-Range");
-				long range;
-				if (contentRange != null)
-					range = getRange(contentRange);
-				else
-					range = 0L;
-				String fileName = items.get(0).getName();
-				String fileUuid = uuid;
+				Pair<Long, Long> range_size = getContentRangeAndSize(request);
+				
+				MyFile m_file = MyUtil.getFileFromFileUuid(uuid);
+				if (m_file == null) {
+					m_file = new MyFile();
+					m_file.setFile_uuid(uuid);
+					m_file.setModified(new Date());
+					m_file.setFile_name(items.get(0).getName());
+					m_file.setFile_size(range_size.getSecond());
+					m_file.setMyUser(u);
+					MyUtil.saveEntity(m_file);
+				}
+				
 				JsonObject obj = new JsonObject();
 
-				// int counter = 0;
 				for (FileItem fi : items) {
 					if (!fi.isFormField()) {
-						MyChunk chunk = new MyChunk();
-						chunk.setMyFile(m_file);
-						chunk.setFiles_range(range);
-						chunk.setFiles_size(fi.getSize());
 
 						// get MyGoogleAccount correspondent with the credential
 						// used to upload
@@ -151,58 +126,49 @@ public class RestCall extends MyBaseServlet {
 							// upload the chunk, get the direct download url,
 							// and update new free space in MyGoogleAccount
 							File uploadChunk = new File();
-							uploadChunk.setTitle(uuid + "." + range);
+							uploadChunk.setTitle(uuid + "."
+									+ range_size.getFirst());
 							java.io.File file = new java.io.File("./tempt");
 							fi.write(file);
 							FileContent content = new FileContent(null, file);
 
 							File returnInfo = service.files()
 									.insert(uploadChunk, content).execute();
-							
-							chunk.setChunkUrl(returnInfo.getDownloadUrl());
+
+							MyChunk chunk = new MyChunk();
+							chunk.setMyFile(m_file);
+							chunk.setFiles_range(range_size.getFirst());
+							chunk.setFiles_size(fi.getSize());
+							chunk.setChunkUrl(returnInfo.getWebContentLink());
 							chunk.setMyGoogle(myGoogle);
 							chunk.setId(returnInfo.getId());
-							chunk.setFiles_range(range);
-							
+							chunk.setFiles_range(range_size.getFirst());
+
 							myGoogle.setFree_space(myGoogle.getFree_space()
 									- fi.getSize());
 							MyUtil.saveEntity(myGoogle);
 
 							JsonArray jsonList = new JsonArray();
-							JsonObject fileObj = new JsonObject();
-							fileObj.addProperty("name", "mkyong.com");
-							fileObj.addProperty("size", fi.getSize());
-							fileObj.addProperty("type", "");
-							fileObj.addProperty("deleteType", "DELETE");
-							fileObj.addProperty("contentRange", range);
-							fileObj.addProperty("maxSize",
-									getMaxSize(contentRange));
-							fileObj.addProperty("origin", fileName);
-							fileObj.addProperty("token", fileUuid);
-							fileObj.addProperty("url",
-									returnInfo.getWebContentLink());
-							fileObj.addProperty("deleteUrl",
-									returnInfo.getWebContentLink());
-							fileObj.addProperty("files_access_token",
-									c.getAccessToken());
+							JsonObject fileObj = chunk.toJsonObject();
 
 							jsonList.add(fileObj);
 							obj.add("files", jsonList);
 
 							file.delete();
+							MyUtil.saveEntity(chunk);
+
 						} catch (IOException e) {
 							System.out.println("An error occured: " + e);
+							MyFile f = MyUtil.getFileFromFileUuid(uuid);
+							MyUtil.deleteEntity(f);
 
 							return errorObj.toString();
 						}
 
-						MyUtil.saveEntity(chunk);
 
-						range += fi.getSize();
 					}
 				}
 				// update size of file, by the sum of all chunks's sizes
-				m_file.setFile_size(range);
 				MyUtil.saveEntity(m_file);
 
 				return obj.toString();
@@ -233,6 +199,20 @@ public class RestCall extends MyBaseServlet {
 		return Long.valueOf(maxSize);
 	}
 
+	private Pair<Long, Long> getContentRangeAndSize(HttpServletRequest request) {
+		String contentRange = request.getHeader("Content-Range");
+		if (contentRange == null) {
+			contentRange = request.getHeader("Content-Length");
+			long size = Long.valueOf(contentRange);
+			return new Pair<Long, Long>(0L, size);
+		} else {
+			String[] parts = contentRange.split("/");
+			long size = Long.valueOf(parts[1]);
+			long range = Long.valueOf(parts[0].split("-")[0].substring(6));
+			return new Pair<Long, Long>(range, size);
+		}
+	}
+
 	@GET
 	@Path("/allfiles")
 	public String getAllChunkOfFile() throws Exception {
@@ -250,7 +230,7 @@ public class RestCall extends MyBaseServlet {
 					.getCredentialWithRefreshToken(request, (String) request
 							.getSession().getAttribute(KEY_SESSION_USERID), gg);
 			JsonObject obj = c.toJsonObject();
-			//obj.addProperty("files_access_token", cr.getAccessToken());
+			// obj.addProperty("files_access_token", cr.getAccessToken());
 			array.add(obj);
 		}
 		System.out.println(array.toString());
@@ -263,7 +243,7 @@ public class RestCall extends MyBaseServlet {
 		// User u = MyUtil.getUserFromUsername((String) request.getSession()
 		// .getAttribute("username"));
 
-		User u = MyUtil.getUserFromUsername("root");
+		User u = MyUtil.getUserFromUserId("root");
 		if (u == null)
 			throw new Exception("No User");
 
@@ -275,7 +255,7 @@ public class RestCall extends MyBaseServlet {
 	public boolean setFolderJSON() {
 		try {
 
-			User u = MyUtil.getUserFromUsername((String) request.getSession()
+			User u = MyUtil.getUserFromUserId((String) request.getSession()
 					.getAttribute("username"));
 			String json = request.getParameter("folderJSON");
 			MyFolder f = u.getMyFolder();
@@ -295,7 +275,7 @@ public class RestCall extends MyBaseServlet {
 	@GET
 	@Path("/upload")
 	public JsonArray getAllFiles() {
-		User u = MyUtil.getUserFromUsername((String) request.getSession()
+		User u = MyUtil.getUserFromUserId((String) request.getSession()
 				.getAttribute("username"));
 
 		JsonArray array = new JsonArray();
@@ -337,8 +317,8 @@ public class RestCall extends MyBaseServlet {
 	}
 
 	public User getCurrentUser() {
-		User u = MyUtil.getUserFromUsername((String) request.getSession()
-				.getAttribute("username"));
+		User u = MyUtil.getUserFromUserId((String) request.getSession()
+				.getAttribute(KEY_SESSION_USERID));
 
 		return u;
 	}
@@ -362,7 +342,6 @@ public class RestCall extends MyBaseServlet {
 	public String test() {
 		request.getSession();
 		User u1 = new User();
-		u1.setUsername("root");
 		u1.setUser_uuid("123456");
 		MyUtil.saveEntity(u1);
 

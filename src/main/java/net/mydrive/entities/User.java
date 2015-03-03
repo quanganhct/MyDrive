@@ -23,10 +23,6 @@ import javax.persistence.Table;
 @Table(name = "myuser")
 public class User implements Serializable, MyObject {
 	private String user_uuid;
-
-	private String username;
-
-	private String pwdEncode;
 	
 //	private List<MyFolder> listFolders = new ArrayList<MyFolder>();
 	
@@ -45,24 +41,6 @@ public class User implements Serializable, MyObject {
 	public void setUser_uuid(String user_uuid) {
 		this.user_uuid = user_uuid;
 	}
-
-	@Column(name = "username")
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-//
-//	@OneToMany(fetch = FetchType.LAZY, mappedBy = "myUser", cascade = CascadeType.ALL)
-//	public List<MyFolder> getListFolders() {
-//		return listFolders;
-//	}
-//
-//	public void setListFolders(List<MyFolder> listFolders) {
-//		this.listFolders = listFolders;
-//	}
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "myUser")
 	public List<MyGoogleAccount> getListGoogleAccount() {
@@ -91,12 +69,4 @@ public class User implements Serializable, MyObject {
 		this.listAllFile = listAllFile;
 	}
 
-	@Column(name = "pwdEncode")
-	public String getPwdEncode() {
-		return pwdEncode;
-	}
-
-	public void setPwdEncode(String pwdEncode) {
-		this.pwdEncode = pwdEncode;
-	}
 }
