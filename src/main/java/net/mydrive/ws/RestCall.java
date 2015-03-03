@@ -11,14 +11,22 @@ package net.mydrive.ws;
  * 
  */
 
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.http.FileContent;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.File;
+import com.google.gson.JsonArray;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,7 +36,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
-
 import net.mydrive.entities.MyChunk;
 import net.mydrive.entities.MyFile;
 import net.mydrive.entities.MyFolder;
@@ -36,22 +43,14 @@ import net.mydrive.entities.MyGoogleAccount;
 import net.mydrive.entities.User;
 import net.mydrive.util.MyUtil;
 import net.mydrive.util.Pair;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.hibernate.Query;
 import org.hibernate.Session;
-
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.http.FileContent;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.File;
-import com.google.gson.JsonArray;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 @Path("/command")
 public class RestCall extends MyBaseServlet {
@@ -87,8 +86,11 @@ public class RestCall extends MyBaseServlet {
 
 	@POST
 	@Path("/upload/{uuid}")
-	public boolean uploadFile(@PathParam("uuid") String uuid) throws Exception {
+	public String uploadFile(@PathParam("uuid") String uuid) throws Exception {
 		User u = getCurrentUser();
+                // Error message ready
+                JSONObject errorObj = new JSONObject();
+                errorObj.put("error",true);
 		// System.out.println("Cred value: ");
 		// System.out.println(request.getSession().getAttribute("cred").toString());
 
@@ -105,16 +107,33 @@ public class RestCall extends MyBaseServlet {
 				m_file.setFile_name(items.get(0).getName());
 				m_file.setFile_size(0);
 				MyUtil.saveEntity(m_file);
-
-				long range = 0;
-				int counter = 0;
+                                   
+                                /*
+                                        Enumeration headerNames = request.getHeaderNames();
+                                while (headerNames.hasMoreElements()) {
+                                        String key = (String) headerNames.nextElement();
+                                        String value = request.getHeader(key);
+                                        //map.put(key, value);
+                                        System.out.println("Key: "+key+" Value:"+value);
+                                }
+                                 */
+                                
+                                
+                                String contentRange = request.getHeader("Content-Range");
+				long range = getRange(contentRange);
+                                String fileName = items.get(0).getName();
+                                String fileUuid = uuid;
+                                JSONObject obj = new JSONObject();
+                                    
+				//int counter = 0;
 				for (FileItem fi : items) {
 					if (!fi.isFormField()) {
 						MyChunk chunk = new MyChunk();
 						chunk.setMyFile(m_file);
 						chunk.setFiles_range(range);
 						chunk.setFiles_size(fi.getSize());
-
+                                                
+                                                
 						// get MyGoogleAccount correspondent with the credential
 						// used to upload
 						Pair<Credential, MyGoogleAccount> p = getGoogleCredentialForUpload(fi
@@ -126,9 +145,9 @@ public class RestCall extends MyBaseServlet {
 						try {
 							// upload the chunk, get the direct download url,
 							// and update new free space in MyGoogleAccount
-							counter++;
+							//counter++;
 							File uploadChunk = new File();
-							uploadChunk.setTitle(uuid + "." + counter);
+							uploadChunk.setTitle(uuid + "." + range);
 							java.io.File file = new java.io.File("./tempt");
 							fi.write(file);
 							FileContent content = new FileContent(null, file);
@@ -141,11 +160,30 @@ public class RestCall extends MyBaseServlet {
 							myGoogle.setFree_space(myGoogle.getFree_space()
 									- fi.getSize());
 							MyUtil.saveEntity(myGoogle);
-
+                                                        
+                                                        JSONArray jsonList = new JSONArray();
+                                                        JSONObject fileObj = new JSONObject();
+                                                        
+                                                        fileObj.put("name", "mkyong.com");
+                                                        fileObj.put("size", fi.getSize());
+                                                        fileObj.put("type", "");
+                                                        fileObj.put("deleteType", "DELETE");
+                                                        fileObj.put("contentRange", range);
+                                                        fileObj.put("maxSize", getMaxSize(contentRange));
+                                                        fileObj.put("origin", fileName);
+                                                        fileObj.put("token", fileUuid);
+                                                        fileObj.put("url", returnInfo.getDownloadUrl());
+                                                        fileObj.put("deleteUrl", returnInfo.getDownloadUrl());
+                                                        jsonList.add(fileObj);
+                                                        obj.put("files",jsonList);
+                                                        
+                                                        
+                                                
 							file.delete();
 						} catch (IOException e) {
 							System.out.println("An error occured: " + e);
-							return false;
+                                                        
+							return errorObj.toJSONString();
 						}
 
 						MyUtil.saveEntity(chunk);
@@ -157,7 +195,7 @@ public class RestCall extends MyBaseServlet {
 				m_file.setFile_size(range);
 				MyUtil.saveEntity(m_file);
 
-				return true;
+				return obj.toJSONString();
 			} catch (FileUploadException e) {
 				System.err.println("Error Upload File " + e);
 			}
@@ -165,9 +203,25 @@ public class RestCall extends MyBaseServlet {
 
 		}
 
-		return false;
+		
+		return errorObj.toJSONString();
 	}
-
+        
+        private Long getRange(String s){
+            String[] bigParts = s.split("/");
+            //String maxSize = bigParts[1];
+            
+            String range = bigParts[0].split("-")[0].substring(6);;
+            return Long.valueOf(range);
+        }
+        
+        private Long getMaxSize(String s){
+            String[] bigParts = s.split("/");
+            String maxSize = bigParts[1];
+            
+           // String range = bigParts[0].split("-")[0].substring(6);;
+            return Long.valueOf(maxSize);
+        }
 	@GET
 	@Path("/allfiles")
 	public JsonArray getAllChunkOfFile() throws Exception {

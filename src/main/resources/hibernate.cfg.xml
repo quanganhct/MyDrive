@@ -12,9 +12,9 @@
   	</property>
 
   	<property name="hibernate.connection.url">
-  		jdbc:mysql://localhost/mydrive
+  		jdbc:mysql://127.0.0.1/mydrive
   	</property>
-  	<property name="hibernate.connection.username">
+   <property name="hibernate.connection.username">
       quanganhct
    </property>
    <property name="hibernate.connection.password">

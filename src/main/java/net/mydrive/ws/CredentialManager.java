@@ -23,6 +23,7 @@ public class CredentialManager {
 	private GoogleClientSecrets clientSecret;
 	private HttpTransport transport;
 	private JsonFactory jsonFactory;
+        private CredentialManager single = null;
 
 	public static final List<String> SCOPES = Arrays.asList(
 			"https://www.googleapis.com/auth/drive.file",
@@ -31,10 +32,21 @@ public class CredentialManager {
 
 	public CredentialManager(GoogleClientSecrets clientSecret,
 			HttpTransport transport, JsonFactory jFactory) {
+            
 		this.clientSecret = clientSecret;
 		this.transport = transport;
 		this.jsonFactory = jFactory;
 	}
+        
+        public CredentialManager getCredentialManager(GoogleClientSecrets clientSecret,
+			HttpTransport transport, JsonFactory jFactory){
+            if(this.single == null){
+                this.single = new CredentialManager( clientSecret,transport,  jFactory);
+                return this.single;
+            }else{
+                return this.single;
+            }
+        } 
 
 	public Credential buildEmpty() {
 		Credential c = new GoogleCredential.Builder()
