@@ -163,8 +163,6 @@ public class RestCall extends MyBaseServlet {
 
 							JsonArray jsonList = new JsonArray();
 							JsonObject fileObj = chunk.toJsonObject();
-							fileObj.addProperty("files_access_token",
-									c.getAccessToken());
 
 							jsonList.add(fileObj);
 							obj.add("files", jsonList);
@@ -185,7 +183,7 @@ public class RestCall extends MyBaseServlet {
 				m_file.setFile_size(range);
 				MyUtil.saveEntity(m_file);
 
-				return obj.getAsString();
+				return obj.toString();
 			} catch (FileUploadException e) {
 				System.err.println("Error Upload File " + e);
 			}
@@ -193,7 +191,7 @@ public class RestCall extends MyBaseServlet {
 
 		}
 
-		return errorObj.toJSONString();
+		return errorObj.toString();
 	}
 
 	private Long getRange(String s) {
@@ -223,7 +221,17 @@ public class RestCall extends MyBaseServlet {
 
 		JsonArray array = new JsonArray();
 		for (MyChunk c : f.getList_chunk()) {
-			array.add(c.toJsonObject());
+			String gg = c.getMyGoogle().getAccount_name();
+			
+			Credential cr = ((CredentialManager2) request.getSession()
+					.getAttribute("CredentialManager2"))
+					.getCredentialWithRefreshToken(
+							request,
+							(String) request.getSession().getAttribute(
+									KEY_SESSION_USERID), gg);
+			JsonObject obj = c.toJsonObject();
+			obj.addProperty("file_access_token", cr.getAccessToken());
+			array.add(obj);
 		}
 		System.out.println(array.toString());
 		return array.toString();
