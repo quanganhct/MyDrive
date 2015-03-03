@@ -108,7 +108,7 @@ public class RestCall extends MyBaseServlet {
 				m_file.setFile_size(0);
 				MyUtil.saveEntity(m_file);
                                    
-                                /*
+                                
                                         Enumeration headerNames = request.getHeaderNames();
                                 while (headerNames.hasMoreElements()) {
                                         String key = (String) headerNames.nextElement();
@@ -116,7 +116,7 @@ public class RestCall extends MyBaseServlet {
                                         //map.put(key, value);
                                         System.out.println("Key: "+key+" Value:"+value);
                                 }
-                                 */
+                                 
                                 
                                 
                                 String contentRange = request.getHeader("Content-Range");
@@ -224,7 +224,7 @@ public class RestCall extends MyBaseServlet {
         }
 	@GET
 	@Path("/allfiles")
-	public JsonArray getAllChunkOfFile() throws Exception {
+	public String getAllChunkOfFile() throws Exception {
 		String file_uuid = request.getParameter("file_token");
 		MyFile f = MyUtil.getFileFromFileUuid(file_uuid);
 		if (f == null)
@@ -234,8 +234,8 @@ public class RestCall extends MyBaseServlet {
 		for (MyChunk c : f.getList_chunk()) {
 			array.add(c.toJsonObject());
 		}
-
-		return array;
+                System.out.println(array.toString());
+		return array.toString();
 	}
 
 	@GET
@@ -351,14 +351,24 @@ public class RestCall extends MyBaseServlet {
 		request.getSession()
 				.setAttribute(KEY_SESSION_USERID, u1.getUser_uuid());
 
-		MyFolder f = new MyFolder();
-		f.setFolder_uuid("1234");
-		f.setFoldersJSON("{ folder: [{ id: 0, name: null, parent: null, files: [] }]}");
-		f.setMyUser(u1);
+		//MyFolder f = new MyFolder();
+                //f.ge
+		//f.setFolder_uuid("1234");
+		//f.setFoldersJSON("{ folder: [{ id: 0, name: null, parent: null, files: [] }]}");
+		//f.setMyUser(u1);
+                MyFolder f = u1.getMyFolder();
 		MyUtil.saveEntity(f);
 		manuelInit(new NetHttpTransport());
 		u1 = getCurrentUser();
 		initializeUserCredentialManager(u1);
+                
+                       Enumeration attributeName = request.getSession().getAttributeNames();
+                                while (attributeName.hasMoreElements()) {
+                                        String key = (String) attributeName.nextElement();
+                                        String value = request.getHeader(key);
+                                        //map.put(key, value);
+                                        System.out.println("Key: "+key+" Value:"+value);
+                                }
 		return "it work";
 	}
 

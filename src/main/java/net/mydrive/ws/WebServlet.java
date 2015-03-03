@@ -51,7 +51,7 @@ public class WebServlet extends HttpServlet {
             request.getRequestDispatcher("login.html").forward(request, response);
         }else{
             System.out.println("Error 404");
-           // response.sendRedirect("/login.html");
+            //response.sendRedirect("/login.html");
             request.getRequestDispatcher("login.html").forward(request, response);
         }
     }

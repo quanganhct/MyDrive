@@ -1,12 +1,13 @@
 $(function() {
 
 			var remote = {options:{
-				loadUrl:"/uploaded/files/",
+				loadUrl:"",
 				uploadUrl:"/rest/command/upload/",
 				getFolderJson:"/rest/command/folder/get",
 				saveFolderJson:"/rest/command/folder/set",
 				deleteUrl:"/files/delete",
-				space:"/upload/size"
+				space:"/upload/size",
+				allFiles:"/rest/command/allfiles"
 			}};
 			/*
 getFolderJson Format : JSON (Juste convertir le text en json et le returner)
@@ -46,11 +47,23 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 
 
 				remote.getAllFiles = function(files_token,name,token,callback){
-					$.get('allfiles',{files_token:files_token},function(result){
+					$.get(remote.options.allFiles,{file_token:files_token},function(e){
+							e = JSON.stringify(eval('('+e+')'));
+							obj = JSON.parse(e);
+							var result = [];
+							for(el in obj){
+								result.push(obj[el]);
+								//console.log(obj[el]);
+							}
 
+							result.sort(function(a, b){return a.files_range-b.files_range});
 
-							console.log(result);
-							app.load(result.data,0,name,token,function(resultLoad){
+							//console.log(result);
+							//console.log(result[1].files_range);
+							//console.log(result[2].files_range);
+							//console.log(result[3].files_range);
+							
+							app.load(result,0,name,token,function(resultLoad){
 									//app.fso = new FSO(1024 * 1024 * 1024 * 10, true);
 									console.log(resultLoad);
 									var url = app.fso.toURL(name);
@@ -838,14 +851,16 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 				if(data.length == 0){
 					callback(true);
 				}else{
+					
 					var oReq = new XMLHttpRequest();
-					oReq.open("GET", remote.options.loadUrl+data[0].files_url, true);
+					oReq.open("GET",data[0].files_url+"&access_token="+data[0].files_access_token, true);
 
-					console.log("url: "+remote.options.loadUrl+data[0].files_url);
+					console.log("url: https://docs.google.com/uc?export=download&id="+data[0].id);
 					oReq.responseType = "arraybuffer";
 
 					oReq.onload = function(oEvent) {
 						console.log(oEvent);
+
 					  //var blob = new Blob([oReq.response], {type: "application/zip"});
 					  //var object = {name:data[0].files_range,data:oReq.response,type:blob.type,size:blob.size}
 					  //delete blob;
@@ -898,7 +913,7 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 			}
 		}
 
-		//app.run();
+		app.run();
 		folder.init();
 
 

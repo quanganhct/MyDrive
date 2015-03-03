@@ -60,10 +60,7 @@
 	
 					
 					<div class="form-group">
-						<a href="#" class="btn btn-primary btn-block text-left google">
-							<i class="fa-google-plus"></i>
-							Log In with Google
-						</a>
+						<button id="authorize-button" style="visibility: hidden">Authorize</button>
 					</div>
 					
 					<div class="login-footer">
@@ -95,12 +92,95 @@
 	<script src="assets/js/jquery-validate/jquery.validate.min.js"></script>
 	<script src="assets/js/toastr/toastr.min.js"></script>
 
-
+	
+	
 	<!-- JavaScripts initializations and stuff -->
 	<script src="assets/js/xenon-custom.js"></script>
 	<script type="text/javascript">
+		var clientId = '931551019502-nu8qirrk52a8olf2jmtu0hlic8c5jj7q.apps.googleusercontent.com';
+
+      var apiKey = 'AIzaSyAObyK6Pe366jOWNmBPTQDD7Vrdzmv57QM';
+
+      var scopes = 'https://www.googleapis.com/auth/drive';
+
+      function handleClientLoad() {
+        // Step 2: Reference the API key
+        gapi.client.setApiKey(apiKey);
+        window.setTimeout(checkAuth,1);
+      }
+
+      function checkAuth() {
+        gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: true}, handleAuthResult);
+      }
+
+      function handleAuthResult(authResult) {
+        var authorizeButton = document.getElementById('authorize-button');
+        if (authResult && !authResult.error) {
+          authorizeButton.style.visibility = 'hidden';
+          makeApiCall();
+        } else {
+          authorizeButton.style.visibility = '';
+          authorizeButton.onclick = handleAuthClick;
+        }
+      }
+
+      function retrieveAllFiles(callback) {
+		  var retrievePageOfFiles = function(request, result) {
+		    request.execute(function(resp) {
+		      result = result.concat(resp.items);
+		      var nextPageToken = resp.nextPageToken;
+		      if (nextPageToken) {
+		        request = gapi.client.drive.files.list({
+		          'pageToken': nextPageToken
+		        });
+		        retrievePageOfFiles(request, result);
+		      } else {
+		        callback(result);
+		      }
+		    });
+		  }
+		  var initialRequest = gapi.client.drive.files.list();
+		  retrievePageOfFiles(initialRequest, []);
+		}
+
+      function handleAuthClick(event) {
+        // Step 3: get authorization to use private data
+        gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: false}, handleAuthResult);
+        return false;
+      }
+
+      // Load the API and make an API call.  Display the results on the screen.
+      function makeApiCall() {
+      	 var accessToken = gapi.auth.getToken().access_token;
+      	 console.log(accessToken);
+      	  gapi.client.load('drive', 'v2', function() {
+      	  	retrieveAllFiles(function(e){
+      	 	console.log("List of files");
+      	 	console.log(e);
+      	 })
+});
+      	 
+	    var xhr = new XMLHttpRequest();
+	    xhr.open('GET', "https://drive.google.com/uc?export=download&id=0B3mO0lfwqEHyVzA4Y1F2dG5BbUU",true);
+	    xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+	    xhr.dataType =
+	    xhr.onload = function() {
+
+	      //console.log(xhr.responseText);
+	    };
+	    xhr.onerror = function() {
+	      //callback(null);
+	    };
+	    xhr.send();
+      }
+	</script>
+	<script type="text/javascript" src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
+	<script type="text/javascript">
 	$( document ).ready(function(){
 		   	setTimeout(function(){ $(".fade-in-effect").addClass('in'); }, 1);
+		   	//handleClientLoad();
+	});
+	/*$
 						
 						
 						// Set Form focus
@@ -115,7 +195,8 @@
 					});
 				return false;
 			});
-	});
+	
+*/
 	</script>
 
 </body>
