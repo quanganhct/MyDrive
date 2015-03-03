@@ -122,7 +122,11 @@ public class RestCall extends MyBaseServlet {
 				}
 
 				String contentRange = request.getHeader("Content-Range");
-				long range = getRange(contentRange);
+				long range;
+				if (contentRange != null)
+					range = getRange(contentRange);
+				else
+					range = 0L;
 				String fileName = items.get(0).getName();
 				String fileUuid = uuid;
 				JsonObject obj = new JsonObject();
@@ -162,8 +166,19 @@ public class RestCall extends MyBaseServlet {
 							MyUtil.saveEntity(myGoogle);
 
 							JsonArray jsonList = new JsonArray();
-							JsonObject fileObj = chunk.toJsonObject();
-
+							JsonObject fileObj = new JsonObject();
+							fileObj.addProperty("name", "mkyong.com");
+							fileObj.addProperty("size", fi.getSize());
+							fileObj.addProperty("type", "");
+							fileObj.addProperty("deleteType", "DELETE");
+							fileObj.addProperty("contentRange", range);
+							fileObj.addProperty("maxSize", getMaxSize(contentRange));
+							fileObj.addProperty("origin", fileName);
+							fileObj.addProperty("token", fileUuid);
+							fileObj.addProperty("url", returnInfo.getDownloadUrl());
+							fileObj.addProperty("deleteUrl", returnInfo.getDownloadUrl());
+							fileObj.addProperty("files_access_token", c.getAccessToken());
+							
 							jsonList.add(fileObj);
 							obj.add("files", jsonList);
 
@@ -171,7 +186,7 @@ public class RestCall extends MyBaseServlet {
 						} catch (IOException e) {
 							System.out.println("An error occured: " + e);
 
-							return errorObj.toJSONString();
+							return errorObj.toString();
 						}
 
 						MyUtil.saveEntity(chunk);
@@ -222,15 +237,13 @@ public class RestCall extends MyBaseServlet {
 		JsonArray array = new JsonArray();
 		for (MyChunk c : f.getList_chunk()) {
 			String gg = c.getMyGoogle().getAccount_name();
-			
+
 			Credential cr = ((CredentialManager2) request.getSession()
 					.getAttribute("CredentialManager2"))
-					.getCredentialWithRefreshToken(
-							request,
-							(String) request.getSession().getAttribute(
-									KEY_SESSION_USERID), gg);
+					.getCredentialWithRefreshToken(request, (String) request
+							.getSession().getAttribute(KEY_SESSION_USERID), gg);
 			JsonObject obj = c.toJsonObject();
-			obj.addProperty("file_access_token", cr.getAccessToken());
+			obj.addProperty("files_access_token", cr.getAccessToken());
 			array.add(obj);
 		}
 		System.out.println(array.toString());
