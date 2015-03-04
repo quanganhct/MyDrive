@@ -81,10 +81,10 @@ public class MyUtil {
 		Query q = s.createQuery("from MyGoogleAccount where myUser IS NULL");
 		List<MyGoogleAccount> result = q.list();
 		s.close();
-		
+
 		return result;
 	}
-	
+
 	public static User getUserFromUserId(String id) {
 		Session s = getSessionFactory().openSession();
 		Query q = s.createQuery("from User where user_uuid = :id");
@@ -140,5 +140,34 @@ public class MyUtil {
 		MyGoogleAccount g = (MyGoogleAccount) result.get(0);
 		s.close();
 		return g;
+	}
+
+	public static void resetAll() {
+		Session s = getSessionFactory().openSession();
+		Query q1 = s.createQuery("DELETE from User");
+		Query q2 = s.createQuery("DELETE from MyChunk");
+		Query q3 = s.createQuery("DELETE from MyFile");
+		Query q4 = s.createQuery("DELETE from MyFolder");
+		Query q5 = s.createQuery("DELETE from MyGoogleAccount");
+		s.beginTransaction();
+		q1.executeUpdate();
+		q2.executeUpdate();
+		q3.executeUpdate();
+		q4.executeUpdate();
+		q5.executeUpdate();
+		s.getTransaction().commit();
+		
+		MyGoogleAccount g1 = new MyGoogleAccount();
+		g1.setAccount_name("puf.dreamteam1");
+		g1.setFree_space(15000000000L);
+		g1.setRefresh_token("1/4QDjxnb15FpsC-EJz1w7sPKnc9GslrFI6zhzb6WxpHw");
+		
+		MyGoogleAccount g2 = new MyGoogleAccount();
+		g2.setAccount_name("puf.dreamteam2");
+		g2.setFree_space(15000000000L);
+		g2.setRefresh_token("1/wCS3tr-7xd0WJMa-veGpL4IO7Lhkt3GOJkElfxEduhk");
+		
+		saveEntity(g1);
+		saveEntity(g2);
 	}
 }

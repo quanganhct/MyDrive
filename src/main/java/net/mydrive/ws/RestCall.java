@@ -70,7 +70,6 @@ public class RestCall extends MyBaseServlet {
 	@Context
 	private ServletContext context;
 
-
 	@POST
 	@Path("/upload/{uuid}")
 	public String uploadFile(@PathParam("uuid") String uuid) throws Exception {
@@ -88,7 +87,6 @@ public class RestCall extends MyBaseServlet {
 			try {
 				List<FileItem> items = uploadHandler.parseRequest(request);
 
-				
 				Enumeration<String> headerNames = request.getHeaderNames();
 				while (headerNames.hasMoreElements()) {
 					String key = (String) headerNames.nextElement();
@@ -97,7 +95,7 @@ public class RestCall extends MyBaseServlet {
 					System.out.println("Key: " + key + " Value:" + value);
 				}
 				Pair<Long, Long> range_size = getContentRangeAndSize(request);
-				
+
 				MyFile m_file = MyUtil.getFileFromFileUuid(uuid);
 				if (m_file == null) {
 					m_file = new MyFile();
@@ -108,7 +106,7 @@ public class RestCall extends MyBaseServlet {
 					m_file.setMyUser(u);
 					MyUtil.saveEntity(m_file);
 				}
-				
+
 				JsonObject obj = new JsonObject();
 
 				for (FileItem fi : items) {
@@ -164,7 +162,6 @@ public class RestCall extends MyBaseServlet {
 
 							return errorObj.toString();
 						}
-
 
 					}
 				}
@@ -350,13 +347,27 @@ public class RestCall extends MyBaseServlet {
 		}
 		return "it work";
 	}
-        
-        @GET
-        @Path("/logout")
-        public boolean logout(){
-            request.getSession().invalidate();
-            return true;
-        }
+	
+	@GET
+	@Path("/resetBD")
+	public boolean reset(){
+		try{
+			MyUtil.resetAll();
+		}catch(Exception e){
+			System.err.println("Cant reset " + e);
+			return false;
+		}
+		
+		return true;
+	}
+
+	@GET
+	@Path("/logout")
+	public boolean logout() {
+		request.getSession().invalidate();
+		return true;
+	}
+
 	@DELETE
 	@Path("/delete/{file_uuid}")
 	public boolean deleteFile(@PathParam("file_uuid") String uuid)

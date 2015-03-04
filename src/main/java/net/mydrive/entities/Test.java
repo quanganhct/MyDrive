@@ -60,9 +60,9 @@ public class Test {
 
 		User u = MyUtil.getUserFromUserId("root");
 
+		MyUtil.resetAll();
 		
-		
-		System.out.println(u.getMyFolder().getFoldersJSON());
+		//System.out.println(u.getMyFolder().getFoldersJSON());
 
 		MyUtil.getSessionFactory().close();
 
