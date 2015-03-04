@@ -350,7 +350,13 @@ public class RestCall extends MyBaseServlet {
 		}
 		return "it work";
 	}
-
+        
+        @GET
+        @Path("/logout")
+        public boolean logout(){
+            request.getSession().invalidate();
+            return true;
+        }
 	@DELETE
 	@Path("/delete/{file_uuid}")
 	public boolean deleteFile(@PathParam("file_uuid") String uuid)
