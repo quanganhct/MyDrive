@@ -139,7 +139,7 @@ public class RestCall extends MyBaseServlet {
 							chunk.setMyFile(m_file);
 							chunk.setFiles_range(range_size.getFirst());
 							chunk.setFiles_size(fi.getSize());
-							chunk.setChunkUrl(returnInfo.getWebContentLink());
+							chunk.setChunkUrl(returnInfo.getDownloadUrl());
 							chunk.setMyGoogle(myGoogle);
 							chunk.setId(returnInfo.getId());
 							chunk.setFiles_range(range_size.getFirst());
