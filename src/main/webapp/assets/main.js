@@ -128,6 +128,10 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 					}
 				}
 				*/
+				$('body').on('click',"#logout",function(e){
+					e.preventDefault();
+					app.logout();
+				})
 
 				$('body').on('click','.downloadFile',function(e){
 					e.preventDefault();
@@ -828,6 +832,11 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 			fsq:null,
 			loadBar :{max:5,current:1},
 			data : [],
+			logout:function(){
+				$.get("/rest/command/logout",function(){
+					window.location="";
+				})
+			},
 			getSpace : function(){
 				$.get(remote.options.space,function(e){
 					$("#sizeUsed").html(e.message);
