@@ -956,7 +956,7 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 			}
 		}
 
-		app.run();
+		//app.run();
 		//app.showLoading();
 		folder.init();
 

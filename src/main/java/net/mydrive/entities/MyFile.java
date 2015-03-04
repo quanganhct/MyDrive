@@ -94,7 +94,7 @@ public class MyFile implements Serializable, MyObject {
 		jo.addProperty("modified", this.modified.toString());
 		jo.addProperty("deleteType", "DELETE");
 		jo.addProperty("token", this.file_uuid);
-		jo.addProperty("deleteUrl", "http://test.com:5000/delete/files/" + this.file_uuid);
+		jo.addProperty("deleteUrl", "delete/files/" + this.file_uuid);
 		
 		return jo;
 	}
