@@ -137,10 +137,12 @@ public abstract class MyBaseServlet extends HttpServlet {
 					saveList.add(u);
 					saveList.add(f);
 					MyUtil.saveListEntity(saveList);
+					u = MyUtil.getUserFromUserId(id);
 					
 					provideUserWithGoogleSpaceAvailable(u);
 				}
 
+				u = MyUtil.getUserFromUserId(id);
 				initializeUserCredentialManager(req, u);
 
 				credentialManager.save(id, c);
@@ -163,8 +165,10 @@ public abstract class MyBaseServlet extends HttpServlet {
 				return;
 			} else {
 				for (int i = 0; i < 2 && i < list.size(); i++) {
-					list.get(i).setMyUser(u);
-					MyUtil.saveEntity(list.get(i));
+					MyGoogleAccount g = list.get(i);
+					System.out.println(g.getAccount_name());
+					g.setMyUser(u);
+					MyUtil.saveEntity(g);
 				}
 			}
 		}

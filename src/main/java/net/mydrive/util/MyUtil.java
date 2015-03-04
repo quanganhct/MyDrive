@@ -78,8 +78,7 @@ public class MyUtil {
 
 	public static List<MyGoogleAccount> getListAccountAvailable() {
 		Session s = getSessionFactory().openSession();
-		Query q = s.createQuery("from MyGoogleAccount where myUser = :value");
-		q.setParameter("value", null);
+		Query q = s.createQuery("from MyGoogleAccount where myUser IS NULL");
 		List<MyGoogleAccount> result = q.list();
 		s.close();
 		
