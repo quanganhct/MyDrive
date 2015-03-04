@@ -76,7 +76,7 @@ public class CredentialManager {
 		GoogleAuthorizationCodeRequestUrl url = new GoogleAuthorizationCodeRequestUrl(
 				clientSecret.getWeb().getClientId(), clientSecret.getWeb()
 						.getRedirectUris().get(0), SCOPES).setAccessType(
-				"online").setApprovalPrompt("force");
+				"online");
 		return url.build();
 	}
 

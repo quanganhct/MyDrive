@@ -243,9 +243,10 @@ public class RestCall extends MyBaseServlet {
 		// User u = MyUtil.getUserFromUsername((String) request.getSession()
 		// .getAttribute("username"));
 
-		User u = MyUtil.getUserFromUserId("root");
+		User u = MyUtil.getUserFromUserId((String) request.getSession()
+				.getAttribute(KEY_SESSION_USERID));
 		if (u == null)
-			throw new Exception("No User");
+			throw new Exception("No User " + KEY_SESSION_USERID);
 
 		return u.getMyFolder().getFoldersJSON();
 	}
@@ -275,8 +276,7 @@ public class RestCall extends MyBaseServlet {
 	@GET
 	@Path("/upload")
 	public JsonArray getAllFiles() {
-		User u = MyUtil.getUserFromUserId((String) request.getSession()
-				.getAttribute("username"));
+		User u = getCurrentUser();
 
 		JsonArray array = new JsonArray();
 		for (MyFile f : u.getListAllFile()) {
