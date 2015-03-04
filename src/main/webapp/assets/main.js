@@ -6,8 +6,9 @@ $(function() {
 				getFolderJson:"/rest/command/folder/get",
 				saveFolderJson:"/rest/command/folder/set",
 				deleteUrl:"/rest/command/delete",
-				space:"/upload/size",
-				allFiles:"/rest/command/allfiles"
+				space:"/rest/command/freespace",
+				allFiles:"/rest/command/allfiles",
+				maxSize:"15000000000"
 			}};
 			/*
 getFolderJson Format : JSON (Juste convertir le text en json et le returner)
@@ -285,6 +286,14 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 
 					return callback({listFiles:result,file:object});
 				}
+				folder.converter = function(aSize){
+						aSize = Math.abs(parseInt(aSize, 10));
+						var def = [[1, 'octets'], [1024, 'ko'], [1024*1024, 'Mo'], [1024*1024*1024, 'Go'], [1024*1024*1024*1024, 'To']];
+						for(var i=0; i<def.length; i++){
+							if(aSize<def[i][0]) return (aSize/def[i-1][0]).toFixed(2)+' '+def[i-1][1];
+						}
+					}
+
 
 				folder.findElementByKey = function(key,callback){
 					findElementRecurrent = function(key,currentStructure,result,callback){
@@ -649,6 +658,7 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 	   		console.log(folder.structure);
 	   		folder.saveFolderJson(function(e){
 	   			//alert("Json Folder Saved");
+	   			app.getSpace();
 	   		})
 	});
 	
@@ -838,9 +848,10 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 				})
 			},
 			getSpace : function(){
+				var max = remote.options.maxSize;
 				$.get(remote.options.space,function(e){
-					$("#sizeUsed").html(e.message);
-					$("#barSizeUsed").css("width",e.size+"%");
+					$("#spaceFree").html(folder.converter(e));
+					$("#barSizeUsed").css("width",100-(e/max)*100+"%");
 				})
 			},
 			cleanDrop : function(){
@@ -965,7 +976,7 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 			}
 		}
 
-		app.run();
+		//app.run();
 		//app.showLoading();
 		folder.init();
 
