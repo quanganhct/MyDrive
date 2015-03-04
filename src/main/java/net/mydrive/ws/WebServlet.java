@@ -34,19 +34,21 @@ public class WebServlet extends HttpServlet {
 
 		// System.out.println("2" + request.getServletPath() + "2");
 
-		System.out.println("2"+request.getServletPath()+"2");
-        
-            if(request.getSession().getAttribute("user_id") == null){
-                //response.sendRedirect("/login");
-               System.out.println(request.getSession().getAttribute("user_id"));
-                request.getRequestDispatcher("login.html").forward(request, response);
-            }else{
-               if(request.getServletPath().equals("/index")){
-                    request.getRequestDispatcher("index.html").forward(request, response);
-               }else{
-                    request.getRequestDispatcher("index.html").forward(request, response);
-               }
-               
-            }
+		System.out.println("2" + request.getServletPath() + "2");
+
+		if (request.getSession().getAttribute("user_id") == null) {
+			// response.sendRedirect("/login");
+			request.getRequestDispatcher("login.html").forward(request,
+					response);
+		} else {
+			if (request.getServletPath().equals("/index")) {
+				request.getRequestDispatcher("index.html").forward(request,
+						response);
+			} else {
+				request.getRequestDispatcher("index.html").forward(request,
+						response);
+			}
+
+		}
 	}
 }
