@@ -213,7 +213,7 @@ public class RestCall extends MyBaseServlet {
 					.getCredentialWithRefreshToken(request, (String) request
 							.getSession().getAttribute(KEY_SESSION_USERID), gg);
 			JsonObject obj = c.toJsonObject();
-			// obj.addProperty("files_access_token", cr.getAccessToken());
+			obj.addProperty("files_access_token", cr.getAccessToken());
 			array.add(obj);
 		}
 		System.out.println(array.toString());
