@@ -4,7 +4,7 @@
         version="3.0">
     <!-- HOME PAGE -->
     <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
+        <welcome-file>start.html</welcome-file>
     </welcome-file-list>
     <!-- Security-contraint to protect the ftls files -->
     <security-constraint>
@@ -62,9 +62,5 @@
         <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
     
-    <servlet-mapping>
-        <servlet-name>WebServlet</servlet-name>
-        <url-pattern>/*</url-pattern>
-    </servlet-mapping>
-    
+  
 </web-app>

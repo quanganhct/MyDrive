@@ -34,33 +34,18 @@ public class WebServlet extends HttpServlet {
 
 		// System.out.println("2" + request.getServletPath() + "2");
 
-		if (request.getSession().getAttribute("user_id") == null
-				&& !request.getServletPath().equals("/login")) {
-			System.out.println(request.getServletPath());
-			response.sendRedirect("http://test.com:5000/login");
-		} else {
-
-			if (request.getServletPath().equals("/index")) {
-				if (request.getSession().getAttribute("user_id") == null) {
-					// response.sendRedirect("/login");
-					request.getRequestDispatcher("login.html").forward(request,
-							response);
-				} else {
-					// response.sendRedirect("/index.html");
-					request.getRequestDispatcher("index.html").forward(request,
-							response);
-				}
-
-			} else if (request.getServletPath().equals("/login")) {
-				// response.sendRedirect("/login.html");
-				request.getRequestDispatcher("login.html").forward(request,
-						response);
-			} else {
-				System.out.println("Error 404");
-				// response.sendRedirect("/login.html");
-				request.getRequestDispatcher("login.html").forward(request,
-						response);
-			}
-		}
+		System.out.println("2"+request.getServletPath()+"2");
+        
+            if(request.getSession().getAttribute("user_id") == null){
+                //response.sendRedirect("/login");
+                request.getRequestDispatcher("login.html").forward(request, response);
+            }else{
+               if(request.getServletPath().equals("/index")){
+                    request.getRequestDispatcher("index.html").forward(request, response);
+               }else{
+                    request.getRequestDispatcher("index.html").forward(request, response);
+               }
+               
+            }
 	}
 }
