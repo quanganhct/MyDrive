@@ -4,7 +4,7 @@
     <persistence-unit name="NewPersistenceUnit">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <properties>
-            <property name="hibernate.connection.url" value="jdbc:mysql://us-cdbr-iron-east-01.cleardb.net/heroku_e8bb3bc8d1dcdff"/>
+            <property name="hibernate.connection.url" value="jdbc:mysql://us-cdbr-iron-east-01.cleardb.net/heroku_e8bb3bc8d1dcdff?reconnect=true"/>
             <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver"/>
             <property name="hibernate.connection.username" value="b5e23f6e676231"/>
             <property name="hibernate.connection.password" value="9189c0ce"/>
