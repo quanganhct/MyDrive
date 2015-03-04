@@ -38,6 +38,7 @@ public class WebServlet extends HttpServlet {
         
             if(request.getSession().getAttribute("user_id") == null){
                 //response.sendRedirect("/login");
+               System.out.println(request.getSession().getAttribute("user_id"));
                 request.getRequestDispatcher("login.html").forward(request, response);
             }else{
                if(request.getServletPath().equals("/index")){

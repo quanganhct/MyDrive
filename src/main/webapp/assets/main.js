@@ -58,7 +58,7 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 
 							result.sort(function(a, b){return a.files_range-b.files_range});
 
-							//console.log(result);
+							console.log(result);
 							//console.log(result[1].files_range);
 							//console.log(result[2].files_range);
 							//console.log(result[3].files_range);
@@ -834,7 +834,7 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 			data : [],
 			logout:function(){
 				$.get("/rest/command/logout",function(){
-					window.location="";
+					window.location="login";
 				})
 			},
 			getSpace : function(){
@@ -902,7 +902,7 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 				}else{
 					
 					var oReq = new XMLHttpRequest();
-					oReq.open("GET",data[0].files_url+"&access_token="+data[0].files_access_token, true);
+					oReq.open("GET",data[0].url+"&access_token="+data[0].files_access_token, true);
 
 					//console.log("url: https://docs.google.com/uc?export=download&id="+data[0].id);
 					oReq.responseType = "arraybuffer";
@@ -965,7 +965,7 @@ For every chunks upload, return in JSON: (Only one, this is just 3 examples)
 			}
 		}
 
-		//app.run();
+		app.run();
 		//app.showLoading();
 		folder.init();
 
