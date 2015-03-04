@@ -12,7 +12,7 @@
   	</property>
 
   	<property name="hibernate.connection.url">
-  		jdbc:mysql://b5e23f6e676231:9189c0ce@us-cdbr-iron-east-01.cleardb.net/heroku_e8bb3bc8d1dcdff?reconnect=true
+  		jdbc:mysql://us-cdbr-iron-east-01.cleardb.net/heroku_e8bb3bc8d1dcdff
   	</property>
    <property name="hibernate.connection.username">
       b5e23f6e676231
