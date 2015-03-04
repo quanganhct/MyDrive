@@ -182,23 +182,6 @@ public class RestCall extends MyBaseServlet {
 		return errorObj.toString();
 	}
 
-	private Long getRange(String s) {
-		String[] bigParts = s.split("/");
-		// String maxSize = bigParts[1];
-
-		String range = bigParts[0].split("-")[0].substring(6);
-		;
-		return Long.valueOf(range);
-	}
-
-	private Long getMaxSize(String s) {
-		String[] bigParts = s.split("/");
-		String maxSize = bigParts[1];
-
-		// String range = bigParts[0].split("-")[0].substring(6);;
-		return Long.valueOf(maxSize);
-	}
-
 	private Pair<Long, Long> getContentRangeAndSize(HttpServletRequest request) {
 		String contentRange = request.getHeader("Content-Range");
 		if (contentRange == null) {
@@ -243,8 +226,7 @@ public class RestCall extends MyBaseServlet {
 		// User u = MyUtil.getUserFromUsername((String) request.getSession()
 		// .getAttribute("username"));
 
-		User u = MyUtil.getUserFromUserId((String) request.getSession()
-				.getAttribute(KEY_SESSION_USERID));
+		User u = getCurrentUser();
 		if (u == null)
 			throw new Exception("No User " + KEY_SESSION_USERID);
 
@@ -256,8 +238,7 @@ public class RestCall extends MyBaseServlet {
 	public boolean setFolderJSON() {
 		try {
 
-			User u = MyUtil.getUserFromUserId((String) request.getSession()
-					.getAttribute("username"));
+			User u = getCurrentUser();
 			String json = request.getParameter("folderJSON");
 			MyFolder f = u.getMyFolder();
 			f.setFoldersJSON(json);
