@@ -357,13 +357,13 @@ public class RestCall extends MyBaseServlet {
             request.getSession().invalidate();
             return true;
         }
-	@DELETE
+	@GET
 	@Path("/delete/{file_uuid}")
 	public boolean deleteFile(@PathParam("file_uuid") String uuid)
 			throws Exception {
 		MyFile file = MyUtil.getFileFromFileUuid(uuid);
-		if (file.getMyUser().getUser_uuid() != request.getSession()
-				.getAttribute(KEY_SESSION_USERID)) {
+		if (!file.getMyUser().getUser_uuid().equals((String)(request.getSession()
+				.getAttribute(KEY_SESSION_USERID)))) {
 			return false;
 		}
 
@@ -383,7 +383,7 @@ public class RestCall extends MyBaseServlet {
 		}
 		MyUtil.deleteEntity(file);
 
-		return false;
+		return true;
 	}
 
 	private void initializeUserCredentialManager(User u) {
